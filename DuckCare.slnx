@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="CaseSetup/CaseSetup.fsproj" Id="8025368c-0858-4b91-81af-b14e4b11ed27" />
   <Project Path="Simulation/Simulation.csproj" />
 </Solution>
