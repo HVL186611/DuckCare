@@ -12,5 +12,8 @@ namespace DuckLib
         public int RespiratoryRate { get; set; } = 0;
         public int OxygenSaturation { get; set; } = 0;
         public double Temperature { get; set; } = 0.0;
+
+        // could be useful for log
+        public DateTime RecordedAt { get; set; } = DateTime.Now;
     }
 }

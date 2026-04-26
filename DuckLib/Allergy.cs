@@ -9,6 +9,6 @@ namespace DuckLib
         public int Id { get; set; }
         public string Allergen {  get; set; }
         public string Reaction { get; set; }
-        public List<String> AffectedMedications { get; set; } = new();
+        public List<Medication> AffectedMedications { get; set; } = new();
     }
 }

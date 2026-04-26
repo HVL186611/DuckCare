@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CaseSetup.Models
 {
-    public class SimulationCase
+    public class SimulationCaseOld
     {
         public int Id { get; set; } = 0;
 
