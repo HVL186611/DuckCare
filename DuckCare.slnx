@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="DuckLib/DuckLib.csproj" />
   <Project Path="Simulation/Simulation.csproj" />
 </Solution>
