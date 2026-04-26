@@ -427,3 +427,23 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+# DuckCare / ASP.NET local-only files
+# Keep real secrets and machine-specific settings out of Git.
+appsettings.Development.json
+appsettings.*.local.json
+.env.local
+.env.*.local
+
+# Local SQLite databases, if the group uses SQLite for testing
+*.db
+*.db-shm
+*.db-wal
+
+# ASP.NET user secrets are stored outside the project by default,
+# but ignore the folder if someone accidentally creates it here.
+secrets.json
+**/secrets.json
+
+# Frontend package manager caches, if added later
+.pnpm-store/
+.yarn/
