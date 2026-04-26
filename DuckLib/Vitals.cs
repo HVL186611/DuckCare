@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DuckLib
 {
-    internal class Vitals
+    public class Vitals
     {
     }
 }

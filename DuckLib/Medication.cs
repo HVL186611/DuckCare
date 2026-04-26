@@ -11,6 +11,6 @@ namespace DuckLib
         public string Dose {  get; set; }
         public string Route {  get; set; }
         public string Frequency { get; set; }
-        public string notes { get; set; }
+        public string Notes { get; set; }
     }
 }
