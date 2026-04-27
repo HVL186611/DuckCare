@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="CaseSetup/CaseSetup.csproj" />
   <Project Path="DuckLib/DuckLib.csproj" />
   <Project Path="Simulation/Simulation.csproj" />
 </Solution>
