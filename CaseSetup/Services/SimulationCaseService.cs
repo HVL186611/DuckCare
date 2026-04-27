@@ -14,19 +14,19 @@ namespace CaseSetup.Services
             new SimulationCase
             {
                 Id = 0,
-                Title = "Test Case",
+                Title = "Someone Save Donald!",
                 Description = "No ducks were harmed during the making of this simulation case.",
-                Goals = "Stabilize blood pressure and reduce fever",
+                Goals = "Stabilize bread pressure and reduce feathver.",
                 StudentEditable = false,
                 IsActive = true,
 
                 Patient = new Patient
                 {
                     Id = 1,
-                    Name = "John Doe",
-                    Age = 72,
+                    Name = "Donald Duck",
+                    Age = 25,
                     Sex = "Male",
-                    WeightKg = 82.0
+                    WeightKg = 35.0
                 },
 
                 StartVitals = new Vitals
