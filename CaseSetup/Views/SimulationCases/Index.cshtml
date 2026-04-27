@@ -18,6 +18,7 @@
             <th>Age</th>
             <th>Goals</th>
             <th>Editable</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -40,6 +41,14 @@
                 <td>@simulationCase.Patient.Age</td>
                 <td>@simulationCase.Goals</td>
                 <td>@simulationCase.StudentEditable</td>
+                <td>
+                    <a 
+                        asp-action="Details" 
+                        asp-route-id="@simulationCase.Id" 
+                        class="btn btn-sm btn-outline-primary">
+                        Details
+                    </a>
+                </td>
             </tr>
         }
     </tbody>

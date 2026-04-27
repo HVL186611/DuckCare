@@ -22,11 +22,38 @@ namespace CaseSetup.Services
 
                 Patient = new Patient
                 {
-                    Id = 1,
+                    Id = 0,
                     Name = "Donald Duck",
                     Age = 25,
                     Sex = "Male",
                     WeightKg = 35.0
+                },
+
+                StartVitals = new Vitals
+                {
+                    BPSystolic = 90,
+                    BPDiastolic = 60,
+                    HeartRate = 118,
+                    RespiratoryRate = 24,
+                    OxygenSaturation = 92,
+                    Temperature = 39.1
+                },
+            },
+            new SimulationCase
+            {
+                Id = 1,
+                Title = "Don't Try This at Home",
+                Description = "A goose was harmed during the making of this simulation case.",
+                Goals = "Reduce heart rate to 0.",
+                StudentEditable = true,
+
+                Patient = new Patient
+                {
+                    Id = 1,
+                    Name = "Gus Goose",
+                    Age = 29,
+                    Sex = "Male",
+                    WeightKg = 55.0
                 },
 
                 StartVitals = new Vitals

@@ -1,0 +1,102 @@
+﻿@model DuckLib.SimulationCase
+
+@* style and class stuff courtesy of chatgpt *@
+
+@{
+    ViewData["Title"] = "Case Details";
+}
+<p>
+    <a asp-action="Index" class="btn btn-secondary">Back to cases</a>
+</p>
+
+<h1>@Model.Title</h1>
+
+<p class="lead">@Model.Description</p>
+
+<div class="mb-3">
+    @if (Model.IsActive)
+    {
+        <span class="badge bg-success">Active</span>
+    }
+    else
+    {
+        <span class="badge bg-secondary">Inactive</span>
+    }
+
+    @if (Model.StudentEditable)
+    {
+        <span class="badge bg-info">Editable</span>
+    }
+    else
+    {
+        <span class="badge bg-warning text-dark">Uneditable</span>
+    }
+</div>
+
+@* simulation case info *@
+<div class="d-flex flex-wrap gap-4 align-items-start">
+    <div style="width: min(100%, 560px);">
+        @* patient info *@
+        <h2>Patient</h2>
+
+        <table class="table table-sm">
+            <tbody>
+                <tr>
+                    <th style="width: 160px; white-space: nowrap;">Name</th>
+                    <td style="overflow-wrap: anywhere;">@Model.Patient.Name</td>
+                </tr>
+                <tr>
+                    <th style="width: 160px; white-space: nowrap;">Age</th>
+                    <td>@Model.Patient.Age</td>
+                </tr>
+                <tr>
+                    <th style="width: 160px; white-space: nowrap;">Sex</th>
+                    <td>@Model.Patient.Sex</td>
+                </tr>
+                <tr>
+                    <th style="width: 160px; white-space: nowrap;">Weight</th>
+                    <td>@Model.Patient.WeightKg</td>
+                </tr>
+                <tr>
+                    <th style="width: 160px; white-space: nowrap;">Medical history</th>
+                    <td style="overflow-wrap: anywhere;">@Model.Patient.MedicalHistory</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    @* start vitals info *@
+    <div style="width: min(100%, 400px);">
+        <h2>Vitals</h2>
+
+        <table class="table table-sm">
+            <tbody>
+                <tr>
+                    <th style="width: 220px; white-space: nowrap;">Blood pressure</th>
+                    <td class="text-end">@Model.StartVitals.BPSystolic / @Model.StartVitals.BPDiastolic</td>
+                </tr>
+                <tr>
+                    <th style="width: 220px; white-space: nowrap;">Heart rate</th>
+                    <td class="text-end">@Model.StartVitals.HeartRate</td>
+                </tr>
+                <tr>
+                    <th style="width: 220px; white-space: nowrap;">Respiratory rate</th>
+                    <td class="text-end">@Model.StartVitals.RespiratoryRate</td>
+                </tr>
+                <tr>
+                    <th style="width: 220px; white-space: nowrap;">Oxygen saturation</th>
+                    <td class="text-end">@Model.StartVitals.OxygenSaturation%</td>
+                </tr>
+                <tr>
+                    <th style="width: 220px; white-space: nowrap;">Temperature</th>
+                    <td class="text-end">@Model.StartVitals.Temperature</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<h2>Goals</h2>
+
+<p>@Model.Goals</p>

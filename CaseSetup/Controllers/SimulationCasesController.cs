@@ -19,5 +19,15 @@ namespace CaseSetup.Controllers
 
             return View(cases);
         }
+
+        public IActionResult Details(int id)
+        {
+            SimulationCase? simulationCase = _caseService.GetById(id);
+            
+            if (simulationCase == null) return NotFound();
+
+            return View(simulationCase);
+
+        }
     }
 }
