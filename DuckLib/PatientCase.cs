@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
+
+/*
+ * DENNE KLASSEN BRUKES IKKE
+ */
+
+
+
 namespace DuckLib
 {
     public class PatientCase

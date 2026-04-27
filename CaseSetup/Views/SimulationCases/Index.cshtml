@@ -1,0 +1,46 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+	ViewData["Title"] = "Simulation Cases"; 
+}
+
+<h1>Simulation Cases</h1>
+
+<p>This is where you duck around with simulation cases.</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Active</th>
+            <th>Title</th>
+            <th>Patient</th>
+            <th>Age</th>
+            <th>Goals</th>
+            <th>Editable</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var simulationCase in Model)
+        {
+            <tr>
+                <td>
+                    @if (simulationCase.IsActive)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactive</span>
+                    }
+                </td>
+
+                <td>@simulationCase.Title</td>
+                <td>@simulationCase.Patient.Name</td>
+                <td>@simulationCase.Patient.Age</td>
+                <td>@simulationCase.Goals</td>
+                <td>@simulationCase.StudentEditable</td>
+            </tr>
+        }
+    </tbody>
+</table>
