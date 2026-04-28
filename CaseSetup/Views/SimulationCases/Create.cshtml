@@ -1,25 +1,498 @@
-﻿@*
+﻿@model DuckLib.SimulationCase
+
+@{
+    ViewData["Title"] = "Create Simulation Case";
+}
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@{
-    ViewData["Title"] = "Create Case";
+<h1>Create Simulation Case</h1>
+
+<p class="text-muted">
+    Fill in the details for the scenario, patient, starting vitals, and simulation goals.
+</p>
+
+<form asp-action="Create" method="post">
+    <div class="card mb-4">
+        <div class="card-body">
+
+            <fieldset class="border rounded p-3 mb-4">
+                <legend class="float-none w-auto px-2 fs-5 fw-bold">Case Information</legend>
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label fw-bold"></label>
+                    <input asp-for="Title" class="form-control" placeholder="Example: Acute asthma attack" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold"></label>
+                    <textarea asp-for="Description" class="form-control" rows="3"
+                              placeholder="Briefly describe what the simulation is about"></textarea>
+                </div>
+            </fieldset>
+
+            <!-- specify who will be abused in the sim -->
+            <fieldset class="border rounded p-3 mb-4">
+                <legend class="float-none w-auto px-2 fs-5 fw-bold">Patient</legend>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="Patient.Name" class="form-label fw-bold">Name</label>
+                        <input asp-for="Patient.Name" class="form-control" placeholder="Patient name" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Patient.Age" class="form-label fw-bold">Age</label>
+                        <input asp-for="Patient.Age" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Patient.Sex" class="form-label fw-bold">Sex</label>
+                        <select asp-for="Patient.Sex" class="form-select">
+                            <option value="">Select</option>
+                            <option>Female</option>
+                            <option>Male</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Patient.WeightKg" class="form-label fw-bold">Weight (kg)</label>
+                        <input asp-for="Patient.WeightKg" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Patient.HeightCm" class="form-label fw-bold">Height (cm)</label>
+                        <input asp-for="Patient.HeightCm" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Patient.AdmissionDate" class="form-label fw-bold">Admission Date</label>
+                        <input asp-for="Patient.AdmissionDate" class="form-control" type="datetime-local" />
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Patient.AdmittingDiagnosis" class="form-label fw-bold">Admitting Diagnosis</label>
+                        <input asp-for="Patient.AdmittingDiagnosis" class="form-control" />
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Patient.MedicalHistory" class="form-label fw-bold">Medical History</label>
+                        <textarea asp-for="Patient.MedicalHistory" class="form-control" rows="4"></textarea>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- specify how ducked said person is -->
+            <fieldset class="border rounded p-3 mb-4">
+                <legend class="float-none w-auto px-2 fs-5 fw-bold">Starting Vitals</legend>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="StartVitals.BPSystolic" class="form-label fw-bold">BP Systolic</label>
+                        <input asp-for="StartVitals.BPSystolic" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="StartVitals.BPDiastolic" class="form-label fw-bold">BP Diastolic</label>
+                        <input asp-for="StartVitals.BPDiastolic" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="StartVitals.HeartRate" class="form-label fw-bold">Heart Rate</label>
+                        <input asp-for="StartVitals.HeartRate" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="StartVitals.RespiratoryRate" class="form-label fw-bold">Respiratory Rate</label>
+                        <input asp-for="StartVitals.RespiratoryRate" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="StartVitals.OxygenSaturation" class="form-label fw-bold">Oxygen Saturation (%)</label>
+                        <input asp-for="StartVitals.OxygenSaturation" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="StartVitals.Temperature" class="form-label fw-bold">Temperature (°C)</label>
+                        <input asp-for="StartVitals.Temperature" class="form-control" />
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- if ducking up their vitals isn't enough, feel free to duck with their allergies too -->
+            <fieldset class="border rounded p-3 mb-4">
+                <legend class="float-none w-auto px-2 fs-5 fw-bold">Allergies</legend>
+
+                <div id="allergies-list">
+                    <div class="border rounded p-3 mb-3 allergy-row">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold">Allergen</label>
+                                <input name="Patient.Allergies[0].Allergen" class="form-control" placeholder="Example: Penicillin" />
+                            </div>
+
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold">Reaction</label>
+                                <input name="Patient.Allergies[0].Reaction" class="form-control" placeholder="Example: Rash" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="addAllergy()">
+                    Add allergy
+                </button>
+            </fieldset>
+            
+            <!-- specify how many drugs the patient takes to cope with how much you ducked up their life -->
+            <fieldset class="border rounded p-3 mb-4">
+                <legend class="float-none w-auto px-2 fs-5 fw-bold">Current Medications</legend>
+
+                <div id="medications-list">
+                    <div class="border rounded p-3 mb-3 medication-row">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Medication</label>
+                                <input name="Patient.Medications[0].Name" class="form-control" placeholder="Example: Salbutamol" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold">Dose</label>
+                                <input name="Patient.Medications[0].Dose" class="form-control" placeholder="5 mg" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold">Route</label>
+                                <input name="Patient.Medications[0].Route" class="form-control" placeholder="PO / IV" />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Frequency</label>
+                                <input name="Patient.Medications[0].Frequency" class="form-control" placeholder="Once daily" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="addMedication()">
+                    Add medication
+                </button>
+            </fieldset>
+
+            <!-- send some urine and blood to the local witch and they'll brew up some lab values for you -->
+            <fieldset class="border rounded p-3 mb-4">
+                <legend class="float-none w-auto px-2 fs-5 fw-bold">Lab Values</legend>
+
+                <div id="labvalues-list">
+                    <div class="border rounded p-3 mb-3 labvalue-row">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Name</label>
+                                <input name="LabValues[0].Name" class="form-control" placeholder="Example: CRP" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold">Value</label>
+                                <input name="LabValues[0].Value" class="form-control" placeholder="Example: 120 mg/L" />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Reference</label>
+                                <input name="LabValues[0].Reference" class="form-control" placeholder="Example: < 5 mg/L" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold">Interpretation</label>
+                                <input name="LabValues[0].Interpretation" class="form-control" placeholder="Example: High" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="addLabValue()">
+                    Add lab value
+                </button>
+            </fieldset>
+
+            <!-- specify goals, because our future doctors aren't expected to figure that out from vitals and lab values -->
+            <fieldset class="border rounded p-3 mb-4">
+                <legend class="float-none w-auto px-2 fs-5 fw-bold">Simulation Goals</legend>
+
+                <div class="mb-3">
+                    <label asp-for="Goals" class="form-label fw-bold">Goals</label>
+                    <textarea asp-for="Goals" class="form-control" rows="4"
+                              placeholder="What should the student achieve?"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="GoalTimeMinutes" class="form-label fw-bold">Goal Time (minutes)</label>
+                    <input asp-for="GoalTimeMinutes" class="form-control" style="max-width: 250px;" />
+                </div>
+            </fieldset>
+
+            <!-- how to repair [insert patient] 101 -->
+            <fieldset class="border rounded p-3 mb-4">
+                <legend class="float-none w-auto px-2 fs-5 fw-bold">
+                    Simulation Orders / Correct Interventions
+                </legend>
+
+                <p class="text-muted">
+                    These are the clinically correct actions students are expected to perform during the simulation.
+                    They will be used later to compare against student actions during debrief.
+                </p>
+
+                <div id="orders-list">
+                    <div class="border rounded p-3 mb-3 order-row">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Drug or Action</label>
+                                <input name="Orders[0].Action" class="form-control"
+                                       placeholder="Example: Labetalol" />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Dose / Detail</label>
+                                <input name="Orders[0].Details" class="form-control"
+                                       placeholder="Example: 20 mg IV bolus" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold">Route</label>
+                                <input name="Orders[0].Route" class="form-control"
+                                       placeholder="Example: IV" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold">Timing</label>
+                                <input name="Orders[0].Timing" class="form-control"
+                                       placeholder="STAT / PRN" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-danger w-100"
+                                        onclick="removeRow(this)">
+                                    Remove
+                                </button>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Notes for Simulation Engine</label>
+                                <textarea name="Orders[0].Notes" class="form-control" rows="2"
+                                          placeholder="Example: Repeat dose if BP remains above target"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="addOrder()">
+                    Add order
+                </button>
+            </fieldset>
+
+            <!-- -->
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Create case</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+
+<!-- script -->
+@section Scripts {
+    <script>
+        let allergyIndex = 1;
+        let medicationIndex = 1;
+        let labValueIndex = 1;
+        let orderIndex = 1;
+
+        function removeRow(button) {
+            const row = button.closest(".border.rounded");
+            row.remove();
+        }
+
+                function addOrder() {
+            const list = document.getElementById("orders-list");
+
+            const html = `
+                <div class="border rounded p-3 mb-3 order-row">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Drug or Action</label>
+                            <input name="Orders[${orderIndex}].Action"
+                                   class="form-control"
+                                   placeholder="Example: Labetalol" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Dose / Detail</label>
+                            <input name="Orders[${orderIndex}].Details"
+                                   class="form-control"
+                                   placeholder="Example: 20 mg IV bolus" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Route</label>
+                            <input name="Orders[${orderIndex}].Route"
+                                   class="form-control"
+                                   placeholder="Example: IV" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Timing</label>
+                            <input name="Orders[${orderIndex}].Timing"
+                                   class="form-control"
+                                   placeholder="STAT / PRN" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="button"
+                                    class="btn btn-outline-danger w-100"
+                                    onclick="removeRow(this)">
+                                Remove
+                            </button>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Notes for Simulation Engine</label>
+                            <textarea name="Orders[${orderIndex}].Notes"
+                                      class="form-control"
+                                      rows="2"
+                                      placeholder="Example: Repeat dose if BP remains above target"></textarea>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            list.insertAdjacentHTML("beforeend", html);
+            orderIndex++;
+        }
+
+        function addAllergy() {
+            const list = document.getElementById("allergies-list");
+
+            const html = `
+                <div class="border rounded p-3 mb-3 allergy-row">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold">Allergen</label>
+                            <input name="Patient.Allergies[${allergyIndex}].Allergen" class="form-control" placeholder="Example: Penicillin" />
+                        </div>
+
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold">Reaction</label>
+                            <input name="Patient.Allergies[${allergyIndex}].Reaction" class="form-control" placeholder="Example: Rash" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            list.insertAdjacentHTML("beforeend", html);
+            allergyIndex++;
+        }
+
+        function addMedication() {
+            const list = document.getElementById("medications-list");
+
+            const html = `
+                <div class="border rounded p-3 mb-3 medication-row">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Medication</label>
+                            <input name="Patient.Medications[${medicationIndex}].Name" class="form-control" placeholder="Example: Salbutamol" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Dose</label>
+                            <input name="Patient.Medications[${medicationIndex}].Dose" class="form-control" placeholder="5 mg" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Route</label>
+                            <input name="Patient.Medications[${medicationIndex}].Route" class="form-control" placeholder="PO / IV" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Frequency</label>
+                            <input name="Patient.Medications[${medicationIndex}].Frequency" class="form-control" placeholder="Once daily" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            list.insertAdjacentHTML("beforeend", html);
+            medicationIndex++;
+        }
+
+        function addLabValue() {
+            const list = document.getElementById("labvalues-list");
+
+            const html = `
+                <div class="border rounded p-3 mb-3 labvalue-row">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Name</label>
+                            <input name="LabValues[${labValueIndex}].Name" class="form-control" placeholder="Example: CRP" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Value</label>
+                            <input name="LabValues[${labValueIndex}].Value" class="form-control" placeholder="120" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Unit</label>
+                            <input name="LabValues[${labValueIndex}].Unit" class="form-control" placeholder="mg/L" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Reference Range</label>
+                            <input name="LabValues[${labValueIndex}].ReferenceRange" class="form-control" placeholder="< 5" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            list.insertAdjacentHTML("beforeend", html);
+            labValueIndex++;
+        }
+    </script>
 }
-<p>
-    <a asp-action="Index" class="btn btn-secondary">Back to cases</a>
-</p>
-
-<p>
-	@*<label for="title">Title:</label>*@
-    <b>Title:</b> <br/>
-    <input id="title" type="text" placeholder="My Epic Case" />
-</p>
-
-@*<label for="comments">Description:</label>*@
-<b>Description:</b> <br/>
-<textarea id="comments" name="comments" rows="4" cols="50">
-Simulation case.
-</textarea>
-
-<p>
-    <a asp-action="Index" class="btn btn-primary">Create Case</a>
-</p>

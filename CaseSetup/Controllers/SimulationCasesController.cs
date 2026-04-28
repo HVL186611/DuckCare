@@ -32,7 +32,25 @@ namespace CaseSetup.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            SimulationCase simulationCase = new SimulationCase
+            {
+                Patient = new(),
+                StartVitals = new()
+            };
+            return View(simulationCase);
+        }
+
+        [HttpPost]
+        public IActionResult Create(SimulationCase simulationCase)
+        {
+            // (hopefully) sends form back to Create view to be filled in
+            if (!ModelState.IsValid) return View(simulationCase);
+
+            // add case to database
+            _caseService.Add(simulationCase);
+
+            // return to case list
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -6,10 +6,10 @@ namespace DuckLib
 {
     public class Order
     {
-        public string action = "";
-        public string details = "";
-        public string route = "";
-        public string timing = "";
-        public string notes = "";
+        public string Action { get; set; } = "";
+        public string Details { get; set; } = "";
+        public string Route { get; set; } = "";
+        public string Timing { get; set; } = "";
+        public string Notes { get; set; } = "";
     }
 }
