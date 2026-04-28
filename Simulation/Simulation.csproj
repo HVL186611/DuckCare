@@ -8,4 +8,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CaseSetup\CaseSetup.csproj" />
+    <ProjectReference Include="..\DuckLib\DuckLib.csproj" />
+  </ItemGroup>
+
 </Project>

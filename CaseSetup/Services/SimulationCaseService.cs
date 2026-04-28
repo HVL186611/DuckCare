@@ -38,6 +38,13 @@ namespace CaseSetup.Services
                     OxygenSaturation = 92,
                     Temperature = 39.1
                 },
+                StartDeltas = new VitalDeltas
+                {
+                    BPSystolicDelta = -3,
+                    HeartRateDelta = 2,
+                    SpO2Delta = -1,
+
+                }
             },
             new SimulationCase
             {
@@ -65,6 +72,10 @@ namespace CaseSetup.Services
                     OxygenSaturation = 92,
                     Temperature = 39.1
                 },
+                StartDeltas = new VitalDeltas
+                {
+                    HeartRateDelta = 3
+                }
             }
         };
 
@@ -119,6 +130,12 @@ namespace CaseSetup.Services
                 simulationCase.IsActive = simulationCase.Id == id;
             }
         }
+
+        public SimulationCase? GetActive()
+        {
+            return Cases.FirstOrDefault(c => c.IsActive);
+        }
+
 
         // ---
     }

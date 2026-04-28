@@ -16,6 +16,7 @@ namespace DuckLib
         public Patient Patient { get; set; } = new();
         public Vitals StartVitals { get; set; } = new();
         public string LabValues { get; set; } = "";
+        public VitalDeltas StartDeltas { get; set; } = new();
 
         // simulation goals
         public string Goals { get; set; } = "";

@@ -7,6 +7,34 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
 
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                   Text="{Binding Name}" FontSize="40" Margin="20"/>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="20">
+            <TextBlock Text="Initial"/>
+            <TextBlock Text="{Binding InitialBloodPressure}"/>
+            <TextBlock Text="{Binding InitialHeartRate}"/>
+            <TextBlock Text="{Binding InitialSpO2}"/>
+            <TextBlock Text="{Binding InitialRespiratoryRate}"/>
+            <TextBlock Text="{Binding InitialTemperature}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="20">
+            <TextBlock Text="Current"/>
+            <TextBlock Text="{Binding BloodPressure}"/>
+            <TextBlock Text="{Binding HeartRate}"/>
+            <TextBlock Text="{Binding SpO2}"/>
+            <TextBlock Text="{Binding RespiratoryRate}"/>
+            <TextBlock Text="{Binding Temperature}"/>
+        </StackPanel>
     </Grid>
 </Window>
