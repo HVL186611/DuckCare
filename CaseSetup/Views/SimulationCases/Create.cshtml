@@ -1,0 +1,25 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Create Case";
+}
+<p>
+    <a asp-action="Index" class="btn btn-secondary">Back to cases</a>
+</p>
+
+<p>
+	@*<label for="title">Title:</label>*@
+    <b>Title:</b> <br/>
+    <input id="title" type="text" placeholder="My Epic Case" />
+</p>
+
+@*<label for="comments">Description:</label>*@
+<b>Description:</b> <br/>
+<textarea id="comments" name="comments" rows="4" cols="50">
+Simulation case.
+</textarea>
+
+<p>
+    <a asp-action="Index" class="btn btn-primary">Create Case</a>
+</p>

@@ -6,5 +6,9 @@ namespace DuckLib
 {
     public class LabValue
     {
+        public string name = "";
+        public string value = "";
+        public string reference = "";
+        public string interpretation = "";
     }
 }

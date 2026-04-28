@@ -29,5 +29,10 @@ namespace CaseSetup.Controllers
             return View(simulationCase);
 
         }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
     }
 }

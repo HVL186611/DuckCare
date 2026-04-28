@@ -19,6 +19,7 @@ namespace DuckLib
 
         // simulation goals
         public string Goals { get; set; } = "";
+        public List<Order> Orders { get; set; } = new();
         public int GoalTimeMinutes { get; set; } = 15;
 
         // simulation config
