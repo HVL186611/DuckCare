@@ -13,10 +13,15 @@
                 Aspect="AspectFit"
                 SemanticProperties.Description="dot net bot in a submarine number ten" />
 
+            <Entry 
+                x:Name="nameInput"
+                Placeholder="Enter your name" />
+
             <Label
                 Text="Pasient Simulering"
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
+
 
             <Label
                 Text="Welcome to &#10;.NET Multi-platform App UI"

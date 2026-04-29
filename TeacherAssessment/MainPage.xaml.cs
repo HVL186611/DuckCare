@@ -11,6 +11,7 @@
 
         private void OnStartClicked(object? sender, EventArgs e)
         {
+            //String name = nameInput.Text;
             Console.WriteLine("Simulation Started");
             /**
             count++;
