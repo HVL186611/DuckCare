@@ -9,7 +9,12 @@
     <a asp-action="Index" class="btn btn-secondary">Back to cases</a>
 </p>
 
-<h1>@Model.Title</h1>
+<h1>
+    @Model.Title 
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+        Edit Case
+    </a>
+</h1>
 
 <p class="lead">@Model.Description</p>
 

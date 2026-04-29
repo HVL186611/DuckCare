@@ -1,18 +1,19 @@
 ﻿@model DuckLib.SimulationCase
 
 @{
-    ViewData["Title"] = "Create Simulation Case";
+    bool isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Edit Simulation Case" : "Create Simulation Case";
 }
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-<h1>Create Simulation Case</h1>
+<h1>@(isEdit ? "Edit \"" + Model.Title + '"'  : "Create Simulation Case")</h1>
 
 <p class="text-muted">
     Fill in the details for the scenario, patient, starting vitals, and simulation goals.
 </p>
 
 <form asp-action="Create" method="post">
+    <!-- hidden Id field so create page can be reused for updates as well -->
+    <input type="hidden" asp-for="Id"/>
+
     <div class="card mb-4">
         <div class="card-body">
 
@@ -309,7 +310,7 @@
 
             <!-- -->
             <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Create case</button>
+                <button type="submit" class="btn btn-primary">@(isEdit ? "Save changes" : "Create case")</button>
                 <a asp-action="Index" class="btn btn-secondary">Cancel</a>
             </div>
 
