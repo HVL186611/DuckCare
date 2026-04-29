@@ -4,7 +4,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<SimulationCaseService>();
+builder.Services.AddSingleton<SimulationCaseService>(); // service for interacting with simulation cases
+builder.Services.AddSession(); // session for login stuffz
 
 var app = builder.Build();
 
@@ -18,6 +19,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseSession(); // login stuffz again
 
 app.UseAuthorization();
 

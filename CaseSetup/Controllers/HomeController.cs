@@ -8,7 +8,8 @@ namespace CaseSetup.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            //return View();
+            return RedirectToAction("Index", "SimulationCases");
         }
 
         public IActionResult Privacy()
