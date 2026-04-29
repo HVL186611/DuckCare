@@ -13,7 +13,7 @@ namespace CaseSetup.Services
         {
             new SimulationCase
             {
-                Id = 0,
+                Id = 1,
                 Title = "Someone Save Donald!",
                 Description = "No ducks were harmed during the making of this simulation case.",
                 Goals = "Stabilize bread pressure and reduce feathver.",
@@ -48,7 +48,7 @@ namespace CaseSetup.Services
             },
             new SimulationCase
             {
-                Id = 1,
+                Id = 2,
                 Title = "Don't Try This at Home",
                 Description = "A goose was harmed during the making of this simulation case.",
                 Goals = "Reduce heart rate to 0.",

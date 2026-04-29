@@ -7,15 +7,21 @@ namespace CaseSetup.Controllers
     public class SimulationCasesController : Controller
     {
         private readonly SimulationCaseService _caseService;
+        private bool requireLogin = false; // todo: change to true when testing is done
 
         public SimulationCasesController(SimulationCaseService caseService)
         {
             _caseService = caseService;
         }
 
+        private bool shouldLogin()
+        {
+            return requireLogin && string.IsNullOrEmpty(HttpContext.Session.GetString("Role"));
+        }
+
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("Role") == null) return RedirectToAction("Login", "Account");
+            if (shouldLogin()) return RedirectToAction("Login", "Account");
 
             List<SimulationCase> cases = _caseService.GetAll();
 
@@ -24,7 +30,7 @@ namespace CaseSetup.Controllers
 
         public IActionResult Details(int id)
         {
-            if (HttpContext.Session.GetString("Role") == null) return RedirectToAction("Login", "Account");
+            if (shouldLogin()) return RedirectToAction("Login", "Account");
 
             SimulationCase? simulationCase = _caseService.GetById(id);
             
@@ -36,7 +42,7 @@ namespace CaseSetup.Controllers
 
         public IActionResult Create()
         {
-            if (HttpContext.Session.GetString("Role") == null) return RedirectToAction("Login", "Account");
+            if (shouldLogin()) return RedirectToAction("Login", "Account");
 
             SimulationCase simulationCase = new SimulationCase
             {
@@ -56,11 +62,25 @@ namespace CaseSetup.Controllers
             // you shouldn't get to this page without logging in, but just in case...
             simulationCase.CreatedByRole = HttpContext.Session.GetString("Role") ?? "student";
 
-            // add case to database
-            _caseService.Add(simulationCase);
+            // add/update case database
+            if (simulationCase.Id == 0)  // new cases have Id=0
+                _caseService.Add(simulationCase);
+            else
+                _caseService.Update(simulationCase);
 
             // return to case list
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Edit(int id)
+        {
+            if (shouldLogin()) return RedirectToAction("Login", "Account");
+
+            SimulationCase? simulationCase = _caseService.GetById(id);
+            if (simulationCase == null) return NotFound();
+
+            // reusing create view for updates
+            return View("Create", simulationCase);
         }
     }
 }
