@@ -9,8 +9,10 @@
             InitializeComponent();
         }
 
-        private void OnCounterClicked(object? sender, EventArgs e)
+        private void OnStartClicked(object? sender, EventArgs e)
         {
+            Console.WriteLine("Simulation Started");
+            /**
             count++;
 
             if (count == 1)
@@ -19,6 +21,7 @@
                 CounterBtn.Text = $"Clicked {count} times";
 
             SemanticScreenReader.Announce(CounterBtn.Text);
+            */
         }
     }
 }
