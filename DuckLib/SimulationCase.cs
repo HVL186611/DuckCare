@@ -17,11 +17,12 @@ namespace DuckLib
         public Vitals StartVitals { get; set; } = new();
         public string LabValues { get; set; } = "";
         public VitalDeltas StartDeltas { get; set; } = new();
+        public List<Allergy> Allergies { get; set; } = new();
 
         // simulation goals
-        public string Goals { get; set; } = "";
+        public List<Goal> Goals { get; set; } = new();
         public List<Order> Orders { get; set; } = new();
-        public int GoalTimeMinutes { get; set; } = 15;
+        public int GoalTimeMinutes { get; set; } = 15; // This should be cut
 
         // simulation config
         public bool StudentEditable { get; set; } = true;

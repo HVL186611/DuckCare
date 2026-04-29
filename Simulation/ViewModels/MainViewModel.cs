@@ -19,6 +19,7 @@ namespace Simulation.ViewModels
 
         public SimulationCase? ActiveCase {  get; set; }
         public Vitals? CurrentVitals { get; set; }
+        public Vitals? LastVitals { get; set; }
         public VitalDeltas CurrentDeltas { get; set; } = new();
 
         public MainViewModel()
@@ -29,11 +30,12 @@ namespace Simulation.ViewModels
             if (ActiveCase != null)
             {
                 CurrentVitals = ActiveCase.StartVitals;
+                LastVitals = CurrentVitals;
                 CurrentDeltas = ActiveCase.StartDeltas ?? new VitalDeltas();
             }
 
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(10);
+            _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += OnTick;
             _timer.Start();
         }
@@ -41,6 +43,16 @@ namespace Simulation.ViewModels
         private void OnTick(object? sender, EventArgs e)
         {
             if (CurrentVitals == null) return;
+
+            LastVitals = new Vitals
+            {
+                BPSystolic = CurrentVitals.BPSystolic,
+                BPDiastolic = CurrentVitals.BPDiastolic,
+                HeartRate = CurrentVitals.HeartRate,
+                RespiratoryRate = CurrentVitals.RespiratoryRate,
+                OxygenSaturation = CurrentVitals.OxygenSaturation,
+                Temperature = CurrentVitals.Temperature
+            };
 
             CurrentVitals.BPSystolic += CurrentDeltas.BPSystolicDelta;
             CurrentVitals.BPDiastolic += CurrentDeltas.BPDiastolicDelta;
@@ -54,18 +66,28 @@ namespace Simulation.ViewModels
             OnPropertyChanged(nameof(SpO2));
             OnPropertyChanged(nameof(RespiratoryRate));
             OnPropertyChanged(nameof(Temperature));
-        }
+            OnPropertyChanged(nameof(LastBloodPressure));
+            OnPropertyChanged(nameof(LastHeartRate));
+            OnPropertyChanged(nameof(LastSpO2));
+            OnPropertyChanged(nameof(LastRespiratoryRate));
+            OnPropertyChanged(nameof(LastTemperature));
+        } 
 
         public string Name => ActiveCase?.Patient.Name ?? "No active case";
-        public string InitialBloodPressure => $"BP: {ActiveCase?.StartVitals.BPSystolic}/{ActiveCase?.StartVitals.BPDiastolic} mmHg";
-        public string BloodPressure => $"BP: {CurrentVitals?.BPSystolic}/{CurrentVitals?.BPDiastolic} mmHg";
-        public string InitialHeartRate => $"HR: {ActiveCase?.StartVitals.HeartRate} bpm";
-        public string HeartRate => $"HR: {CurrentVitals?.HeartRate} bpm";
-        public string InitialSpO2 => $"SpO2: {ActiveCase?.StartVitals.OxygenSaturation}%";
-        public string SpO2 => $"SpO2: {CurrentVitals?.OxygenSaturation}%";
-        public string InitialRespiratoryRate => $"RR: {ActiveCase?.StartVitals.RespiratoryRate} b/m";
-        public string RespiratoryRate => $"RR: {CurrentVitals?.RespiratoryRate} b/m";
-        public string InitialTemperature => $"Temp: {ActiveCase?.StartVitals.Temperature}°C";
-        public string Temperature => $"Temp: {CurrentVitals?.Temperature}°C";
+        public string InitialBloodPressure => $"{ActiveCase?.StartVitals.BPSystolic}/{ActiveCase?.StartVitals.BPDiastolic} mmHg";
+        public string BloodPressure => $"{CurrentVitals?.BPSystolic}/{CurrentVitals?.BPDiastolic} mmHg";
+        public string LastBloodPressure => $"{LastVitals?.BPSystolic}/{LastVitals?.BPDiastolic} mmHg";
+        public string InitialHeartRate => $"{ActiveCase?.StartVitals.HeartRate} bpm";
+        public string HeartRate => $"{CurrentVitals?.HeartRate} bpm";
+        public string LastHeartRate => $"{LastVitals?.HeartRate} bpm";
+        public string InitialSpO2 => $"{ActiveCase?.StartVitals.OxygenSaturation}%";
+        public string SpO2 => $"{CurrentVitals?.OxygenSaturation}%";
+        public string LastSpO2 => $"{LastVitals?.OxygenSaturation}%";
+        public string InitialRespiratoryRate => $"{ActiveCase?.StartVitals.RespiratoryRate} b/m";
+        public string RespiratoryRate => $"{CurrentVitals?.RespiratoryRate} b/m";
+        public string LastRespiratoryRate => $"{LastVitals?.RespiratoryRate} b/m";
+        public string InitialTemperature => $"{ActiveCase?.StartVitals.Temperature}°C";
+        public string Temperature => $"{CurrentVitals?.Temperature}°C";
+        public string LastTemperature => $"{LastVitals?.Temperature}°C";
     }
 }
