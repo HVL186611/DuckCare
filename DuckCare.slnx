@@ -2,4 +2,5 @@
   <Project Path="CaseSetup/CaseSetup.csproj" />
   <Project Path="DuckLib/DuckLib.csproj" />
   <Project Path="Simulation/Simulation.csproj" />
+  <Project Path="TeacherAssessment/TeacherAssessment.csproj" Id="5e0305eb-32c0-4d94-b4b3-41b475356dcf" />
 </Solution>
