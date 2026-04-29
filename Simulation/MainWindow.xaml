@@ -5,36 +5,85 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Simulation"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="DuckCare Simulation" Height="700" Width="1100">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
-                   Text="{Binding Name}" FontSize="40" Margin="20"/>
+        <Border Grid.Row="0" Background="#2C3E50" Padding="15">
+            <TextBlock Text="{Binding Name}" FontSize="24" Foreground="white" FontFamily="Bold"/>
+        </Border>
 
-        <StackPanel Grid.Row="1" Grid.Column="0" Margin="20">
-            <TextBlock Text="Initial"/>
-            <TextBlock Text="{Binding InitialBloodPressure}"/>
-            <TextBlock Text="{Binding InitialHeartRate}"/>
-            <TextBlock Text="{Binding InitialSpO2}"/>
-            <TextBlock Text="{Binding InitialRespiratoryRate}"/>
-            <TextBlock Text="{Binding InitialTemperature}"/>
-        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="1" Grid.Column="1" Margin="20">
-            <TextBlock Text="Current"/>
-            <TextBlock Text="{Binding BloodPressure}"/>
-            <TextBlock Text="{Binding HeartRate}"/>
-            <TextBlock Text="{Binding SpO2}"/>
-            <TextBlock Text="{Binding RespiratoryRate}"/>
-            <TextBlock Text="{Binding Temperature}"/>
-        </StackPanel>
+            <StackPanel Grid.Column="0" Margin="15">
+                <TextBlock Text="Vitals" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Start" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Last" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="Current" FontWeight="Bold"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="BP " FontWeight="Bold"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding InitialBloodPressure}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding LastBloodPressure}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding BloodPressure}"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="HR " FontWeight="Bold"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding InitialHeartRate}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding LastHeartRate}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding HeartRate}"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="SpO2 " FontWeight="Bold"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding InitialSpO2}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding LastSpO2}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding SpO2}"/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="RR " FontWeight="Bold"/>
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding InitialRespiratoryRate}"/>
+                    <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding LastRespiratoryRate}"/>
+                    <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding RespiratoryRate}"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Temp " FontWeight="Bold"/>
+                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding InitialTemperature}"/>
+                    <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding LastTemperature}"/>
+                    <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding Temperature}"/>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Margin="15">
+                <TextBlock Text="Administer Medication" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                <TextBlock Text="Medication"/>
+                <ComboBox ItemsSource="{Binding AvailableMedication}" SelectedItem="" Margin="0,0,0,10"/>
+
+                <TextBlock Text="Route"/>
+                <ComboBox ItemSource="{Binding AvailableRoutes}" SelectedItem="" Margin="0,0,0,10"/>
+                
+                <TextBlock Text=""
+
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
