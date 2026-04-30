@@ -42,6 +42,22 @@ namespace CaseSetup.Services
                     HeartRateDelta = 2,
                     SpO2Delta = -1,
 
+                },
+                Goals = new List<Goal>
+                {
+                    new Goal
+                    {
+                        Description = "Stabilize bread pressure within 30 minutes.",
+                        TimerMinutes = 30,
+                        SystolicBP = (100, 120),
+                        DiastolicBP = (70, 80)
+                    },
+                    new Goal
+                    {
+                        Description = "Reduce feath-ver within 60 minutes.",
+                        TimerMinutes = 60,
+                        Temperature = (36.1, 37.2)
+                    }
                 }
             },
             new SimulationCase
