@@ -2,9 +2,11 @@
 
 @{
     bool isEdit = Model.Id != 0;
+    var medications = ViewBag.Medications as List<string> ?? new List<string> { "Could not fetch medications." };
     ViewData["Title"] = isEdit ? "Edit Simulation Case" : "Create Simulation Case";
 }
-<h1>@(isEdit ? "Edit \"" + Model.Title + '"'  : "Create Simulation Case")</h1>
+
+<h1>@(isEdit ? "Edit \"" + Model.Title + '"' : "Create Simulation Case")</h1>
 
 <p class="text-muted">
     Fill in the details for the scenario, patient, starting vitals, and simulation goals.
@@ -13,7 +15,7 @@
 <form asp-action="Create" method="post">
     <div asp-validation-summary="All" class="text-danger mb-3"></div>
     <!-- hidden Id field so create page can be reused for updates as well -->
-    <input type="hidden" asp-for="Id"/>
+    <input type="hidden" asp-for="Id" />
 
     <div class="card mb-4">
         <div class="card-body">
@@ -126,25 +128,34 @@
                 <legend class="float-none w-auto px-2 fs-5 fw-bold">Allergies</legend>
 
                 <div id="allergies-list">
-                    <div class="border rounded p-3 mb-3 allergy-row">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-md-5">
-                                <label class="form-label fw-bold">Allergen</label>
-                                <input name="Patient.Allergies[0].Allergen" class="form-control" placeholder="Example: Potatoes" />
-                            </div>
+                    @for (int i = 0; i < Model.Patient.Allergies.Count; i++)
+                    {
+                        <div class="border rounded p-3 mb-3 allergy-row">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-5">
+                                    <label class="form-label fw-bold">Allergen</label>
+                                    <input name="Patient.Allergies[@i].Allergen"
+                                           value="@Model.Patient.Allergies[i].Allergen"
+                                           class="form-control"
+                                           placeholder="Example: Potatoes" />
+                                </div>
 
-                            <div class="col-md-5">
-                                <label class="form-label fw-bold">Reaction</label>
-                                <input name="Patient.Allergies[0].Reaction" class="form-control" placeholder="Tummy ache :<" />
-                            </div>
+                                <div class="col-md-5">
+                                    <label class="form-label fw-bold">Reaction</label>
+                                    <input name="Patient.Allergies[@i].Reaction"
+                                           value="@Model.Patient.Allergies[i].Reaction"
+                                           class="form-control"
+                                           placeholder="Tummy ache :<" />
+                                </div>
 
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
-                                    Remove
-                                </button>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
+                                        Remove
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
 
                 <button type="button" class="btn btn-secondary" onclick="addAllergy()">
@@ -157,35 +168,61 @@
                 <legend class="float-none w-auto px-2 fs-5 fw-bold">Current Medications</legend>
 
                 <div id="medications-list">
-                    <div class="border rounded p-3 mb-3 medication-row">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Medication</label>
-                                <input name="Patient.Medications[0].Name" class="form-control" placeholder="Breadicillin" />
-                            </div>
+                    @for (int i = 0; i < Model.Patient.Medications.Count; i++)
+                    {
+                        <div class="border rounded p-3 mb-3 medication-row">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Medication</label>
+                                    <select name="Patient.Medications[@i].Medication.Name" class="form-select">
+                                        <option value="">Select medication</option>
 
-                            <div class="col-md-2">
-                                <label class="form-label fw-bold">Dose</label>
-                                <input name="Patient.Medications[0].Dose" class="form-control" placeholder="5 slices" />
-                            </div>
+                                        @foreach (string medicationName in medications)
+                                        {
+                                            if (Model.Patient.Medications[i].Medication.Name == medicationName)
+                                            {
+                                                <option value="@medicationName" selected>@medicationName</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@medicationName">@medicationName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
 
-                            <div class="col-md-2">
-                                <label class="form-label fw-bold">Route</label>
-                                <input name="Patient.Medications[0].Route" class="form-control" placeholder="Mouth" />
-                            </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Dose</label>
+                                    <input name="Patient.Medications[@i].Dose"
+                                           value="@Model.Patient.Medications[i].Dose"
+                                           class="form-control"
+                                           placeholder="5 slices" />
+                                </div>
 
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Frequency</label>
-                                <input name="Patient.Medications[0].Frequency" class="form-control" placeholder="Once daily" />
-                            </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Route</label>
+                                    <input name="Patient.Medications[@i].Route"
+                                           value="@Model.Patient.Medications[i].Route"
+                                           class="form-control"
+                                           placeholder="Mouth" />
+                                </div>
 
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
-                                    Remove
-                                </button>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Frequency</label>
+                                    <input name="Patient.Medications[@i].Timing"
+                                           value="@Model.Patient.Medications[i].Timing"
+                                           class="form-control"
+                                           placeholder="Once daily" />
+                                </div>
+
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
+                                        Remove
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
 
                 <button type="button" class="btn btn-secondary" onclick="addMedication()">
@@ -198,35 +235,50 @@
                 <legend class="float-none w-auto px-2 fs-5 fw-bold">Lab Values</legend>
 
                 <div id="labvalues-list">
-                    <div class="border rounded p-3 mb-3 labvalue-row">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Name</label>
-                                <input name="LabValues[0].Name" class="form-control" placeholder="Feathers" />
-                            </div>
+                    @for (int i = 0; i < Model.LabValues.Count; i++)
+                    {
+                        <div class="border rounded p-3 mb-3 labvalue-row">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Name</label>
+                                    <input name="LabValues[@i].Name"
+                                           value="@Model.LabValues[i].Name"
+                                           class="form-control"
+                                           placeholder="Feathers" />
+                                </div>
 
-                            <div class="col-md-2">
-                                <label class="form-label fw-bold">Value</label>
-                                <input name="LabValues[0].Value" class="form-control" placeholder="Very shiny" />
-                            </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Value</label>
+                                    <input name="LabValues[@i].Value"
+                                           value="@Model.LabValues[i].Value"
+                                           class="form-control"
+                                           placeholder="Very shiny" />
+                                </div>
 
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Reference</label>
-                                <input name="LabValues[0].Reference" class="form-control" placeholder="Shiny" />
-                            </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Reference</label>
+                                    <input name="LabValues[@i].Reference"
+                                           value="@Model.LabValues[i].Reference"
+                                           class="form-control"
+                                           placeholder="Shiny" />
+                                </div>
 
-                            <div class="col-md-2">
-                                <label class="form-label fw-bold">Interpretation</label>
-                                <input name="LabValues[0].Interpretation" class="form-control" placeholder="duck=pretty" />
-                            </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Interpretation</label>
+                                    <input name="LabValues[@i].Interpretation"
+                                           value="@Model.LabValues[i].Interpretation"
+                                           class="form-control"
+                                           placeholder="duck=pretty" />
+                                </div>
 
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
-                                    Remove
-                                </button>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
+                                        Remove
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
 
                 <button type="button" class="btn btn-secondary" onclick="addLabValue()">
@@ -234,19 +286,115 @@
                 </button>
             </fieldset>
 
-            <!-- specify goals, because our future doctors aren't expected to figure that out from vitals and lab values -->
+            <!-- specify goals, because our future doctors aren't expected to figure that out themselves -->
             <fieldset class="border rounded p-3 mb-4">
                 <legend class="float-none w-auto px-2 fs-5 fw-bold">Simulation Goals</legend>
 
                 <div class="mb-3">
-                    <label asp-for="Goals" class="form-label fw-bold">Goals</label>
-                    <textarea asp-for="Goals" class="form-control" rows="4"
+                    <label asp-for="Goals.Description" class="form-label fw-bold">Description</label>
+                    <textarea asp-for="Goals.Description" class="form-control" rows="4"
                               placeholder="What should the student achieve?"></textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="GoalTimeMinutes" class="form-label fw-bold">Goal Time (minutes)</label>
-                    <input asp-for="GoalTimeMinutes" class="form-control" style="max-width: 250px;" />
+                    <label asp-for="Goals.TimerMinutes" class="form-label fw-bold">Goal Time (minutes)</label>
+                    <input asp-for="Goals.TimerMinutes" class="form-control" style="max-width: 250px;" />
+                </div>
+
+                <p class="text-muted mb-3">
+                    Target ranges for a stable adult patient. Leave empty if a value is not relevant for this case.
+                </p>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Systolic Blood Pressure</label>
+                        <div class="input-group">
+                            <input name="Goals.SystolicBP.Min"
+                                   value="@(Model.Goals.SystolicBP?.Min)"
+                                   class="form-control"
+                                   placeholder="90" />
+                            <span class="input-group-text">to</span>
+                            <input name="Goals.SystolicBP.Max"
+                                   value="@(Model.Goals.SystolicBP?.Max)"
+                                   class="form-control"
+                                   placeholder="120" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Diastolic Blood Pressure</label>
+                        <div class="input-group">
+                            <input name="Goals.DiastolicBP.Min"
+                                   value="@(Model.Goals.DiastolicBP?.Min)"
+                                   class="form-control"
+                                   placeholder="80" />
+                            <span class="input-group-text">to</span>
+                            <input name="Goals.DiastolicBP.Max"
+                                   value="@(Model.Goals.DiastolicBP?.Max)"
+                                   class="form-control"
+                                   placeholder="90" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Heart Rate</label>
+                        <div class="input-group">
+                            <input name="Goals.HeartRate.Min"
+                                   value="@(Model.Goals.HeartRate?.Min)"
+                                   class="form-control"
+                                   placeholder="60" />
+                            <span class="input-group-text">to</span>
+                            <input name="Goals.HeartRate.Max"
+                                   value="@(Model.Goals.HeartRate?.Max)"
+                                   class="form-control"
+                                   placeholder="100" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Respiratory Rate</label>
+                        <div class="input-group">
+                            <input name="Goals.RespiratoryRate.Min"
+                                   value="@(Model.Goals.RespiratoryRate?.Min)"
+                                   class="form-control"
+                                   placeholder="12" />
+                            <span class="input-group-text">to</span>
+                            <input name="Goals.RespiratoryRate.Max"
+                                   value="@(Model.Goals.RespiratoryRate?.Max)"
+                                   class="form-control"
+                                   placeholder="20" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">SpO2 (%)</label>
+                        <div class="input-group">
+                            <input name="Goals.SpO2.Min"
+                                   value="@(Model.Goals.SpO2?.Min)"
+                                   class="form-control"
+                                   placeholder="95" />
+                            <span class="input-group-text">to</span>
+                            <input name="Goals.SpO2.Max"
+                                   value="@(Model.Goals.SpO2?.Max)"
+                                   class="form-control"
+                                   placeholder="100" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Temperature (°C)</label>
+                        <div class="input-group">
+                            <input name="Goals.Temperature.Min"
+                                   value="@(Model.Goals.Temperature?.Min)"
+                                   class="form-control"
+                                   placeholder="36.1" />
+                            <span class="input-group-text">to</span>
+                            <input name="Goals.Temperature.Max"
+                                   value="@(Model.Goals.Temperature?.Max)"
+                                   class="form-control"
+                                   placeholder="37.2" />
+                        </div>
+                    </div>
                 </div>
             </fieldset>
 
@@ -257,51 +405,83 @@
                 </legend>
 
                 <p class="text-muted">
-                    These are the clinically correct actions students are expected to perform during the simulation.
+                    These are the clinically correct medication orders students are expected to perform during the simulation.
                     They will be used later to compare against student actions during debrief.
                 </p>
 
                 <div id="orders-list">
-                    <div class="border rounded p-3 mb-3 order-row">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Drug or Action</label>
-                                <input name="Orders[0].Action" class="form-control"
-                                       placeholder="separate drug input from action input?" />
-                            </div>
+                    @for (int i = 0; i < Model.Orders.Count; i++)
+                    {
+                        <div class="border rounded p-3 mb-3 order-row">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Medication</label>
+                                    <select name="Orders[@i].Medication.Name" class="form-select">
+                                        <option value="">Select medication</option>
 
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Dose / Detail</label>
-                                <input name="Orders[0].Details" class="form-control"
-                                       placeholder="Example: 20 mg" />
-                            </div>
+                                        @foreach (string medicationName in medications)
+                                        {
+                                            if (Model.Orders[i].Medication.Name == medicationName)
+                                            {
+                                                <option value="@medicationName" selected>@medicationName</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@medicationName">@medicationName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
 
-                            <div class="col-md-2">
-                                <label class="form-label fw-bold">Route</label>
-                                <input name="Orders[0].Route" class="form-control"
-                                       placeholder="Example: IV" />
-                            </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Dose</label>
+                                    <input name="Orders[@i].Dose"
+                                           value="@Model.Orders[i].Dose"
+                                           class="form-control"
+                                           placeholder="20" />
+                                </div>
 
-                            <div class="col-md-2">
-                                <label class="form-label fw-bold">Timing</label>
-                                <input name="Orders[0].Timing" class="form-control"
-                                       placeholder="STAT / PRN" />
-                            </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Dose Unit</label>
+                                    <select name="Orders[@i].DoseUnit" class="form-select">
+                                        @foreach (string doseUnit in new List<string> { "mg", "g", "mcg", "mL", "L", "IE", "mmol" })
+                                        {
+                                            if (Model.Orders[i].DoseUnit == doseUnit)
+                                            {
+                                                <option value="@doseUnit" selected>@doseUnit</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@doseUnit">@doseUnit</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
 
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-outline-danger w-100"
-                                        onclick="removeRow(this)">
-                                    Remove
-                                </button>
-                            </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Route</label>
+                                    <input name="Orders[@i].Route"
+                                           value="@Model.Orders[i].Route"
+                                           class="form-control"
+                                           placeholder="Example: IV" />
+                                </div>
 
-                            <div class="col-12">
-                                <label class="form-label fw-bold">Notes for Simulation Engine</label>
-                                <textarea name="Orders[0].Notes" class="form-control" rows="2"
-                                          placeholder="Example: Repeat dose if BP remains above target"></textarea>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Timing</label>
+                                    <input name="Orders[@i].Timing"
+                                           value="@Model.Orders[i].Timing"
+                                           class="form-control"
+                                           placeholder="STAT / PRN" />
+                                </div>
+
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">
+                                        Remove
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
 
                 <button type="button" class="btn btn-secondary" onclick="addOrder()">
@@ -323,34 +503,72 @@
 <!-- script -->
 @section Scripts {
     <script>
-        let allergyIndex = 1;
-        let medicationIndex = 1;
-        let labValueIndex = 1;
-        let orderIndex = 1;
+        const medications = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(medications));
+        const doseUnits = ["mg", "g", "mcg", "mL", "L", "IE", "mmol"];
+
+        let allergyIndex = @Model.Patient.Allergies.Count;
+        let medicationIndex = @Model.Patient.Medications.Count;
+        let labValueIndex = @Model.LabValues.Count;
+        let orderIndex = @Model.Orders.Count;
 
         function removeRow(button) {
             const row = button.closest(".border.rounded");
             row.remove();
         }
 
-                function addOrder() {
+        function medicationSelectHtml(name) {
+            let html = `<select name="${name}" class="form-select">`;
+            html += `<option value="">Select medication</option>`;
+
+            medications.forEach(function (medicationName) {
+                html += `<option value="${escapeHtml(medicationName)}">${escapeHtml(medicationName)}</option>`;
+            });
+
+            html += `</select>`;
+            return html;
+        }
+
+        function doseUnitSelectHtml(name) {
+            let html = `<select name="${name}" class="form-select">`;
+
+            doseUnits.forEach(function (doseUnit) {
+                html += `<option value="${escapeHtml(doseUnit)}">${escapeHtml(doseUnit)}</option>`;
+            });
+
+            html += `</select>`;
+            return html;
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function addOrder() {
             const list = document.getElementById("orders-list");
 
             const html = `
                 <div class="border rounded p-3 mb-3 order-row">
                     <div class="row g-3 align-items-end">
                         <div class="col-md-3">
-                            <label class="form-label fw-bold">Drug or Action</label>
-                            <input name="Orders[${orderIndex}].Action"
-                                   class="form-control"
-                                   placeholder="Example: Labetalol" />
+                            <label class="form-label fw-bold">Medication</label>
+                            ${medicationSelectHtml(`Orders[${orderIndex}].Medication.Name`)}
                         </div>
 
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold">Dose / Detail</label>
-                            <input name="Orders[${orderIndex}].Details"
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Dose</label>
+                            <input name="Orders[${orderIndex}].Dose"
                                    class="form-control"
-                                   placeholder="Example: 20 mg IV bolus" />
+                                   placeholder="20" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Dose Unit</label>
+                            ${doseUnitSelectHtml(`Orders[${orderIndex}].DoseUnit`)}
                         </div>
 
                         <div class="col-md-2">
@@ -367,20 +585,12 @@
                                    placeholder="STAT / PRN" />
                         </div>
 
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <button type="button"
                                     class="btn btn-outline-danger w-100"
                                     onclick="removeRow(this)">
                                 Remove
                             </button>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-bold">Notes for Simulation Engine</label>
-                            <textarea name="Orders[${orderIndex}].Notes"
-                                      class="form-control"
-                                      rows="2"
-                                      placeholder="Example: Repeat dose if BP remains above target"></textarea>
                         </div>
                     </div>
                 </div>
@@ -427,7 +637,7 @@
                     <div class="row g-3 align-items-end">
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Medication</label>
-                            <input name="Patient.Medications[${medicationIndex}].Name" class="form-control" placeholder="Example: Salbutamol" />
+                            ${medicationSelectHtml(`Patient.Medications[${medicationIndex}].Medication.Name`)}
                         </div>
 
                         <div class="col-md-2">
@@ -442,7 +652,7 @@
 
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Frequency</label>
-                            <input name="Patient.Medications[${medicationIndex}].Frequency" class="form-control" placeholder="Once daily" />
+                            <input name="Patient.Medications[${medicationIndex}].Timing" class="form-control" placeholder="Once daily" />
                         </div>
 
                         <div class="col-md-2">
@@ -474,14 +684,14 @@
                             <input name="LabValues[${labValueIndex}].Value" class="form-control" placeholder="120" />
                         </div>
 
-                        <div class="col-md-2">
-                            <label class="form-label fw-bold">Unit</label>
-                            <input name="LabValues[${labValueIndex}].Unit" class="form-control" placeholder="mg/L" />
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Reference</label>
+                            <input name="LabValues[${labValueIndex}].Reference" class="form-control" placeholder="< 5" />
                         </div>
 
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold">Reference Range</label>
-                            <input name="LabValues[${labValueIndex}].ReferenceRange" class="form-control" placeholder="< 5" />
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Interpretation</label>
+                            <input name="LabValues[${labValueIndex}].Interpretation" class="form-control" placeholder="High" />
                         </div>
 
                         <div class="col-md-2">

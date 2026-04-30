@@ -20,6 +20,6 @@ namespace DuckLib
         public string SocialHistory { get; set; } = "";
         public string FamilyHistory { get; set; } = "";
         public List<Allergy> Allergies { get; set; } = new();
-        public List<Medication> Medications { get; set; } = new();
+        public List<Order> Medications { get; set; } = new();
     }
 }

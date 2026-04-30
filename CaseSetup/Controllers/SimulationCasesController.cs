@@ -19,6 +19,11 @@ namespace CaseSetup.Controllers
             return requireLogin && string.IsNullOrEmpty(HttpContext.Session.GetString("Role"));
         }
 
+        private void fillViewBag()
+        {
+            ViewBag.Medications = _caseService.GetMedications();
+        }
+
         public IActionResult Index()
         {
             if (shouldLogin()) return RedirectToAction("Login", "Account");
@@ -43,6 +48,8 @@ namespace CaseSetup.Controllers
         public IActionResult Create()
         {
             if (shouldLogin()) return RedirectToAction("Login", "Account");
+
+            fillViewBag();
 
             SimulationCase simulationCase = new SimulationCase
             {
@@ -83,7 +90,7 @@ namespace CaseSetup.Controllers
         public IActionResult Edit(int id)
         {
             if (shouldLogin()) return RedirectToAction("Login", "Account");
-
+            fillViewBag();
             SimulationCase? simulationCase = _caseService.GetById(id);
             if (simulationCase == null) return NotFound();
 

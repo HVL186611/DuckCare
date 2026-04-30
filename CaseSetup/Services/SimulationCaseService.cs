@@ -1,5 +1,6 @@
 ﻿using DuckLib;
 
+
 /*
  * temporarily stores cases in memory
  * todo: link with database
@@ -9,6 +10,23 @@ namespace CaseSetup.Services
 {
     public class SimulationCaseService
     {
+        private static readonly List<string> Medications = new List<string> {
+            "Breadicillin",
+            "Featherol",
+            "Ducaine",
+            "Duckamine",
+            "Mallardol",
+            "Waddlemycin",
+            "Billatonin",
+            "Floatamine",
+            "Paddlex",
+            "Plumagrel",
+            "Plumadryl",
+            "Quackzac",
+            "Billagra",
+            "Nestapro",
+            "Nestrogen"
+        };
         private static readonly List<SimulationCase> Cases = new()
         {
             new SimulationCase
@@ -25,7 +43,16 @@ namespace CaseSetup.Services
                     Name = "Donald Duck",
                     Age = 25,
                     Sex = "Male",
-                    WeightKg = 35.0
+                    WeightKg = 35.0,
+                    Medications = new List<Order>
+                    {
+                        new Order { 
+                            Medication = new Medication { Name="Billagra" }, 
+                            Dose=10, 
+                            Timing="Once daily", 
+                            Route="Oral"
+                        }
+                    },
                 },
 
                 StartVitals = new Vitals
@@ -44,23 +71,32 @@ namespace CaseSetup.Services
                     SpO2Delta = -1,
 
                 },
-                Goals = new List<Goal>
+                Allergies = new List<Allergy>
                 {
-                    new Goal
+                    new Allergy
                     {
-                        Description = "Stabilize bread pressure within 30 minutes.",
-                        TimerMinutes = 30,
-                        SystolicBP = (100, 120),
-                        DiastolicBP = (70, 80)
+                        Id = 0,
+                        Allergen = "ACE Inhibitors",
+                        Reaction = "Angioedema - severe swelling of face/throat, can block airways",
+                        AffectedMedications = new List<Medication>
+                        {
+                            new Medication { Id = 0, Name = "Ramipril" },
+                            new Medication { Id = 1, Name = "Enalapril" }
+                        }
                     },
-                    new Goal
+                    new Allergy
                     {
-                        Description = "Reduce feath-ver within 60 minutes.",
-                        TimerMinutes = 60,
-                        Temperature = (36.1, 37.2)
+                        Id = 1,
+                        Allergen = "Penicillin",
+                        Reaction = "Skin rash",
+                        AffectedMedications = new List<Medication>
+                        {
+                            new Medication { Id = 2, Name = "Penicillin" },
+                        }
                     }
-                }
+                },
             },
+            //----------------------------------------
             new SimulationCase
             {
                 Id = 2,
@@ -94,10 +130,10 @@ namespace CaseSetup.Services
             },
             new SimulationCase
             {
-                Id = 2,
+                Id = 3,
                 Title = "Hypertensive Emergency",
                 Description = "Patient presents with dangerously elevated blood pressure and severe headache.",
-                StudentEditable = false,
+                StudentEditable = true,
                 IsActive = true,
                 Patient = new Patient
                 {
@@ -175,15 +211,12 @@ namespace CaseSetup.Services
                         DeltaChange = new VitalDeltas { BPSystolicDelta = -15, BPDiastolicDelta = -8 }
                     }
                 },
-                Goals = new List<Goal>
-                {
-                    new Goal
+                Goals = new Goal
                     {
                         Description = "Reduce systolic BP to safe range within 60 minutes",
                         TimerMinutes = 60,
                         SystolicBP = (140, 160)
                     }
-                }
             }
         };
 
@@ -246,5 +279,10 @@ namespace CaseSetup.Services
 
 
         // ---
+
+        public List<string> GetMedications()
+        {
+            return Medications;
+        }
     }
 }
