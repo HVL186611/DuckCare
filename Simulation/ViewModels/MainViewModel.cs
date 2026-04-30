@@ -1,9 +1,12 @@
 ﻿using CaseSetup.Services;
 using DuckLib;
+using Simulation.Commands;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace Simulation.ViewModels
@@ -22,6 +25,39 @@ namespace Simulation.ViewModels
         public Vitals? LastVitals { get; set; }
         public VitalDeltas CurrentDeltas { get; set; } = new();
 
+        public ObservableCollection<string> AvailableMedications { get; set; } = new() { "Labetalol", "Penicillin", "Ramipril", "Enalapril" };
+        public ObservableCollection<string> AvailableUnits { get; set; } = new() { "mg", "µg", "ml", "g" };
+        public ObservableCollection<string> AvailableRoutes { get; set; } = new() { "IV", "Sublingual", "Oral", "IM" };
+        public ObservableCollection<string> EventLog { get; set; } = new();
+
+        private string? _selectedMedication;
+        public string? SelectedMedication
+        {
+            get => _selectedMedication;
+            set { _selectedMedication = value; OnPropertyChanged(nameof(SelectedMedication)); }
+        }
+
+        private string? _selectedUnit;
+        public string? SelectedUnit
+        {
+            get => _selectedUnit;
+            set { _selectedUnit = value; OnPropertyChanged(nameof(SelectedUnit)); }
+        }
+
+        private string? _selectedRoute;
+        public string? SelectedRoute
+        {
+            get => _selectedRoute;
+            set { _selectedRoute = value; OnPropertyChanged(nameof(SelectedRoute)); }
+        }
+        public string DoseInput { get; set; } = "";
+
+        public List<Order> Orders { get; } = new();
+        public List<Goal> Goals { get; } = new();
+        public List<Allergy> Allergies { get; } = new();
+
+        public ICommand ConfirmCommand { get; }
+
         public MainViewModel()
         {
             _service = new SimulationCaseService();
@@ -30,12 +66,18 @@ namespace Simulation.ViewModels
             if (ActiveCase != null)
             {
                 CurrentVitals = ActiveCase.StartVitals;
-                LastVitals = CurrentVitals;
+                LastVitals = ActiveCase.StartVitals;
                 CurrentDeltas = ActiveCase.StartDeltas ?? new VitalDeltas();
+
+                Orders = ActiveCase.Orders;
+                Goals = ActiveCase.Goals;
+                Allergies = ActiveCase.Allergies;
             }
 
+            ConfirmCommand = new RelayCommand(Confirm);
+
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Interval = TimeSpan.FromSeconds(10);
             _timer.Tick += OnTick;
             _timer.Start();
         }
@@ -71,6 +113,8 @@ namespace Simulation.ViewModels
             OnPropertyChanged(nameof(LastSpO2));
             OnPropertyChanged(nameof(LastRespiratoryRate));
             OnPropertyChanged(nameof(LastTemperature));
+
+            Log("Vitals Updated!");
         } 
 
         public string Name => ActiveCase?.Patient.Name ?? "No active case";
@@ -89,5 +133,63 @@ namespace Simulation.ViewModels
         public string InitialTemperature => $"{ActiveCase?.StartVitals.Temperature}°C";
         public string Temperature => $"{CurrentVitals?.Temperature}°C";
         public string LastTemperature => $"{LastVitals?.Temperature}°C";
+
+        private void Confirm()
+        {
+            if (string.IsNullOrEmpty(SelectedMedication) || string.IsNullOrEmpty(SelectedUnit) || string.IsNullOrEmpty(SelectedRoute))
+            {
+                Log("Please fill all fields");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(DoseInput) || !double.TryParse(DoseInput, out _))
+            {
+                Log("Dose has to be a valid number");
+                return;
+            }
+
+            Allergy? triggered = Allergies.FirstOrDefault(a => a.AffectedMedications.Any(m => m.Name == SelectedMedication));
+            if (triggered != null)
+            {
+                Log($"CRITICAL: {SelectedMedication} is contraindicted - {triggered.Allergen}: {triggered.Reaction}");
+                return;
+            }
+
+            // Because of a somewhat shortsighted design decision I need to rely on the order itself to fetch medicine info.
+            // Once the database is hooked up I should be able to do a more elegant lookup
+            bool validOrder = false;
+            VitalDeltas effect = new();
+            foreach (var order in Orders)
+            {
+                if (SelectedMedication == order.Medication.Name && SelectedRoute == order.Route && SelectedUnit == order.DoseUnit && double.Parse(DoseInput) == order.Dose)
+                {
+                    validOrder = true;
+                    effect = order.DeltaChange;
+                    break;
+                }
+            }
+
+            if (!validOrder)
+            {
+                Log($"WARNING: Selected administration does not match an order, denied");
+                return;
+            }
+            else
+            {
+                CurrentDeltas.BPSystolicDelta += effect.BPSystolicDelta;
+                CurrentDeltas.BPDiastolicDelta += effect.BPDiastolicDelta;
+                CurrentDeltas.HeartRateDelta += effect.HeartRateDelta;
+                CurrentDeltas.SpO2Delta += effect.SpO2Delta;
+                CurrentDeltas.RespiratoryRateDelta += effect.RespiratoryRateDelta;
+                CurrentDeltas.TemperatureDelta += effect.TemperatureDelta;
+
+                Log($"Administered {DoseInput} {SelectedUnit} of {SelectedMedication} through {SelectedRoute}");
+            }
+        }
+        
+        private void Log(string message) // In the future this will persist to database via the API, for now it is purely on simulation
+        {
+            EventLog.Add($"[{DateTime.Now:HH:mm:ss}] {message}");
+        }
     }
 }

@@ -66,7 +66,15 @@ namespace CaseSetup.Controllers
             if (simulationCase.Id == 0)  // new cases have Id=0
                 _caseService.Add(simulationCase);
             else
+            {
+                if (!simulationCase.StudentEditable && HttpContext.Session.GetString("Role") != "teacher")
+                {
+                    ModelState.AddModelError("", "Only teachers can edit this case.");  // i don't think this works, but it shouldnt be possible for students to get to this page anyways
+                    return View(simulationCase);
+                }
                 _caseService.Update(simulationCase);
+            }
+            // -----------
 
             // return to case list
             return RedirectToAction(nameof(Index));
