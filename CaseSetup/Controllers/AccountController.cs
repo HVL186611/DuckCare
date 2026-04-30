@@ -37,7 +37,7 @@ namespace CaseSetup.Controllers
         }
         public IActionResult Logout()
         {
-            HttpContext.Session.Remove("UserRole");
+            HttpContext.Session.Remove("Role");
 
             return RedirectToAction("Login");
         }
