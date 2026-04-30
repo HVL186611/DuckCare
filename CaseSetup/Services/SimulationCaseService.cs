@@ -18,6 +18,7 @@ namespace CaseSetup.Services
                 Description = "No ducks were harmed during the making of this simulation case.",
                 // Goals = "Stabilize bread pressure and reduce feathver.",
                 StudentEditable = false,
+                IsActive = true,
                 Patient = new Patient
                 {
                     Id = 0,

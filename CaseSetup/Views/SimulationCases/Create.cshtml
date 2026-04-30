@@ -11,6 +11,7 @@
 </p>
 
 <form asp-action="Create" method="post">
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
     <!-- hidden Id field so create page can be reused for updates as well -->
     <input type="hidden" asp-for="Id"/>
 
