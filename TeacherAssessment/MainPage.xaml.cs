@@ -9,10 +9,12 @@
             InitializeComponent();
         }
 
-        private void OnStartClicked(object? sender, EventArgs e)
+        private async void OnStartClicked(object? sender, EventArgs e) //Gjør til async
         {
             //String name = nameInput.Text;
-            Console.WriteLine("Simulation Started");
+            //Console.WriteLine("Simulation Started");
+
+            await Navigation.PushAsync(new Simulation()); //Redirect til Simulation.xaml
             /**
             count++;
 
