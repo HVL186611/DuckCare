@@ -14,9 +14,23 @@ namespace DuckLib
         public VitalDeltas DeltaChange { get; set; } = new(); // Values will be *added not replace* to update the deltas after administration
 
         public int Id = -1; // for conversion. if Id==-1, assign Id before saving to database
-        internal static List<Order> FromEntity(ICollection<Models.Order> orders)
+        
+        internal static List<Order> FromEntity(ICollection<Models.Order> entities, Dictionary<int, Medication> medicationDict)
         {
-            throw new NotImplementedException();
+            List<Order> result = new();
+            foreach (var e in entities)
+            {
+                result.Add(new Order
+                {
+                    Id = e.Id,
+                    Medication = DuckAPI.GetMedication(e.MedicationId ?? 0),
+                    Dose = (double)e.Dose,
+                    DoseUnit = e.DoseUnit,
+                    Route = e.Route,
+                    Timing = e.Timing,
+                });
+            }
+            return result;
         }
 
         internal DuckLib.Models.Order ToEntity(int SimulationId)

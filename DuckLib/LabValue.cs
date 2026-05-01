@@ -13,9 +13,20 @@ namespace DuckLib
 
         public int Id = -1; // for conversion. if Id==-1, assign Id before saving to database
 
-        internal static List<LabValue> FromEntity(ICollection<Models.LabValue> labValues)
+        internal static List<LabValue> FromEntity(ICollection<Models.LabValue> entities)
         {
-            throw new NotImplementedException();
+            List<LabValue> result = new();
+            foreach (var e in entities)
+            {
+                result.Add(new LabValue
+                {
+                    Id = e.Id,
+                    Value = e.Value,
+                    Reference = e.Reference,
+                    Interpretation = e.Interpretation
+                });
+            }
+            return result;
         }
 
         internal DuckLib.Models.LabValue ToEntity(int SimulationId)
