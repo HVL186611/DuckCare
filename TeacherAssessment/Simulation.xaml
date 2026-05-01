@@ -11,5 +11,16 @@
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
         </VerticalStackLayout>
+        <CollectionView ItemsSource="{Binding Eventlog}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <Label Text="{Binding .}" Padding="8"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <!--TODO:
+        Fokuser på realtime view av reaksjoner. Query database og oppdater log.
+        Implementer å gi kommentarer
+        -->
     </ScrollView>
 </ContentPage>
