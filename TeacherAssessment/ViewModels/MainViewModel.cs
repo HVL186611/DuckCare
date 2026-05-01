@@ -17,7 +17,7 @@ namespace TeacherAssessment.ViewModels
 
 
 
-        public void AddEvent(string message, ObservableCollection<string>? log)
+        public void AddEvent(string message, ObservableCollection<string> log)
         {
             log.Add(message);
         }
@@ -27,7 +27,7 @@ namespace TeacherAssessment.ViewModels
 
         static void Main(String[] args)
         {
-            //AddEvent("e", Log);
+            AddEvent("e", Log);
         }
 
     };
