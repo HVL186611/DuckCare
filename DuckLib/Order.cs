@@ -15,7 +15,7 @@ namespace DuckLib
 
         public int Id = -1; // for conversion. if Id==-1, assign Id before saving to database
         
-        internal static List<Order> FromEntity(ICollection<Models.Order> entities, Dictionary<int, Medication> medicationDict)
+        internal static List<Order> FromEntity(ICollection<Models.Order> entities)
         {
             List<Order> result = new();
             foreach (var e in entities)
