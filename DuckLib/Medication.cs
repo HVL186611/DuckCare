@@ -8,5 +8,10 @@ namespace DuckLib
     {
         public int Id { get; set; }
         public string Name { get; set; } = "";
+
+        // for patient medications:
+        public string? Route { get; set; }
+        public string? Dose { get; set; }
+        public string? Frequency { get; set; }
     }
 }

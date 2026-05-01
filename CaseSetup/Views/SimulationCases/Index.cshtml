@@ -28,6 +28,7 @@
     <tbody>
         @foreach (var simulationCase in Model)
         {
+            /*
             var descriptions = new List<string>();
 
             foreach (var goal in simulationCase.Goals)
@@ -35,7 +36,7 @@
                 descriptions.Add(goal.Description);
             }
 
-            string goals = string.Join("\n", descriptions);
+            string goals = string.Join("\n", descriptions); //*/
             <tr>
                 <td>
                     @if (simulationCase.IsActive)
@@ -51,7 +52,7 @@
                 <td>@simulationCase.Title</td>
                 <td>@simulationCase.Patient.Name</td>
                 <td>@simulationCase.Patient.Age</td>
-                <td title="@(goals)">Hover to view goals</td>
+                <td>@simulationCase.Goals.Description</td>
                 <td>@simulationCase.StudentEditable</td>
                 <td>
                     <a 
