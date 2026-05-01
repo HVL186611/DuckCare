@@ -4,6 +4,7 @@
              x:Class="TeacherAssessment.Simulation"
              Title="Simulation">
     <ScrollView>
+        <!--
         <VerticalStackLayout Padding="30,0" Spacing="25">
             <Label 
             Text="Simulasjon"
@@ -11,7 +12,9 @@
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
         </VerticalStackLayout>
-        <CollectionView ItemsSource="{Binding Eventlog}">
+        -->
+        <!-- Fjern VerticalStackLayout slik at content ikke blir brukt 2 ganger-->
+        <CollectionView ItemsSource="{Binding Log}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="x:String">
                     <Label Text="{Binding .}" Padding="8"/>
