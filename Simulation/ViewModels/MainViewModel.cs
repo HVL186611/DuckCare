@@ -53,7 +53,7 @@ namespace Simulation.ViewModels
         public string DoseInput { get; set; } = "";
 
         public List<Order> Orders { get; } = new();
-        public List<Goal> Goals { get; } = new();
+        public Goal Goal { get; } = new();
         public List<Allergy> Allergies { get; } = new();
 
         public ICommand ConfirmCommand { get; }
@@ -70,14 +70,14 @@ namespace Simulation.ViewModels
                 CurrentDeltas = ActiveCase.StartDeltas ?? new VitalDeltas();
 
                 Orders = ActiveCase.Orders;
-                Goals = ActiveCase.Goals;
+                Goal = ActiveCase.Goals;
                 Allergies = ActiveCase.Allergies;
             }
 
             ConfirmCommand = new RelayCommand(Confirm);
 
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(10);
+            _timer.Interval = TimeSpan.FromSeconds(60);
             _timer.Tick += OnTick;
             _timer.Start();
         }
