@@ -11,6 +11,7 @@ namespace Assessment
         private readonly HttpClient _http = new();
 
         private string _status = string.Empty;
+        private Timer _timer;
         public string Status
         {
             get => _status;
