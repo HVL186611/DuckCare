@@ -1,4 +1,7 @@
 <Solution>
+  <Project Path="Assessment/Assessment.csproj" Id="88ecce26-f34f-41f1-bfc0-2f25cdf694cf">
+    <Deploy Solution="Debug|*" />
+  </Project>
   <Project Path="CaseSetup/CaseSetup.csproj" />
   <Project Path="DuckLib/DuckLib.csproj" />
   <Project Path="Simulation/Simulation.csproj" />
