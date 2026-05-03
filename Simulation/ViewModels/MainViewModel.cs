@@ -24,7 +24,7 @@ namespace Simulation.ViewModels
         public Vitals? LastVitals { get; set; }
         public VitalDeltas CurrentDeltas { get; set; } = new();
 
-        public ObservableCollection<string> AvailableMedications { get; set; } = new() { "Labetalol", "Penicillin", "Ramipril", "Enalapril" };
+        public ObservableCollection<string> AvailableMedications { get; set; } = new(DuckAPI.GetMedications().Select(m => m.Name));
         public ObservableCollection<string> AvailableUnits { get; set; } = new() { "mg", "µg", "ml", "g" };
         public ObservableCollection<string> AvailableRoutes { get; set; } = new() { "IV", "Sublingual", "Oral", "IM" };
         public ObservableCollection<string> EventLog { get; set; } = new();
@@ -60,6 +60,7 @@ namespace Simulation.ViewModels
         public MainViewModel()
         {
             ActiveCase = DuckAPI.GetSimulationCases().FirstOrDefault(c => c.IsActive == 1);
+            //ActiveCase = DuckAPI.GetSimulationCase(5);
 
             if (ActiveCase != null)
             {
@@ -68,7 +69,7 @@ namespace Simulation.ViewModels
                 CurrentDeltas = ActiveCase.StartDeltas ?? new VitalDeltas();
 
                 Orders = ActiveCase.Orders.ToList();
-                Goal = ActiveCase.Goals;
+                Goal = ActiveCase.Goals ?? new Goal();
                 Allergies = ActiveCase.Allergies.ToList();
             }
 
@@ -149,7 +150,7 @@ namespace Simulation.ViewModels
             Allergy? triggered = Allergies.FirstOrDefault(a => a.Medications.Any(m => m.Name == SelectedMedication));
             if (triggered != null)
             {
-                Log($"CRITICAL: {SelectedMedication} is contraindicted - {triggered.Allergen}: {triggered.Reaction}");
+                Log($"CRITICAL: {SelectedMedication} is contraindicted - {triggered.Allergen}: {triggered.Reaction}", true);
                 return;
             }
 
@@ -161,6 +162,11 @@ namespace Simulation.ViewModels
             {
                 if (SelectedMedication == order.Medication.Name && SelectedRoute == order.Route && SelectedUnit == order.DoseUnit && double.Parse(DoseInput) == order.Dose)
                 {
+                    if (order.DeltaChange == null)
+                    {
+                        Log("WARNING: Order has no delta change defined");
+                        return;
+                    }
                     validOrder = true;
                     effect = order.DeltaChange;
                     break;
@@ -169,7 +175,7 @@ namespace Simulation.ViewModels
 
             if (!validOrder)
             {
-                Log($"WARNING: Selected administration does not match an order, denied");
+                Log($"WARNING: Selected administration does not match an order, denied", true);
                 return;
             }
             else
@@ -181,15 +187,15 @@ namespace Simulation.ViewModels
                 CurrentDeltas.RespiratoryRateDelta += effect.RespiratoryRateDelta;
                 CurrentDeltas.TemperatureDelta += effect.TemperatureDelta;
 
-                Log($"Administered {DoseInput} {SelectedUnit} of {SelectedMedication} through {SelectedRoute}");
+                Log($"Administered {DoseInput} {SelectedUnit} of {SelectedMedication} through {SelectedRoute}", true);
             }
         }
         
-        private void Log(string message)
+        private void Log(string message, bool persist=false)
         {
             EventLog.Add($"[{DateTime.Now:HH:mm:ss}] {message}");
 
-            if (ActiveCase != null) DuckAPI.AddCaseLog(ActiveCase.Id, message);
+            if (ActiveCase != null && persist) DuckAPI.AddCaseLog(ActiveCase.Id, message);
         }
     }
 }

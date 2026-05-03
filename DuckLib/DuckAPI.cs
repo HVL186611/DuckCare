@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using TestLib.Temp;
@@ -22,8 +23,38 @@ namespace DuckLib
             dx.Update(sim); 
             dx.SaveChanges(true);
         }
-        public static List<SimulationCase> GetSimulationCases() { return dx.SimulationCases.ToList(); }
-        public static SimulationCase? GetSimulationCase(int Id) { return dx.SimulationCases.Where(s => s.Id == Id).FirstOrDefault(); }
+
+        public static List<SimulationCase> GetSimulationCases()
+        {
+            return dx.SimulationCases
+                .Include(s => s.Patient)
+                .Include(s => s.StartVitals)
+                .Include(s => s.StartDeltas)
+                .Include(s => s.Orders)
+                    .ThenInclude(o => o.Medication)
+                .Include(s => s.Allergies)
+                    .ThenInclude(a => a.Medications)
+                .Include(s => s.Goals)
+                .ToList();
+        }
+
+        public static SimulationCase? GetSimulationCase(int Id)
+        {
+            return dx.SimulationCases
+                .Include(s => s.Patient)
+                .Include(s => s.StartVitals)
+                .Include(s => s.StartDeltas)
+                .Include(s => s.Orders)
+                    .ThenInclude(o => o.Medication)
+                .Include(s => s.Orders)
+                    .ThenInclude(o => o.DeltaChange)
+                .Include(s => s.Allergies)
+                    .ThenInclude(a => a.Medications)
+                .Include(s => s.Goals)
+                .Where(s => s.Id == Id)
+                .FirstOrDefault();
+        }
+
         public static List<Medication> GetMedications() { return dx.Medications.ToList(); }
         public static Medication? GetMedication(int Id) { return dx.Medications.Where(s => s.Id == Id).FirstOrDefault(); }
 
