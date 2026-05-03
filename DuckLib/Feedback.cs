@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DuckLib
 {
-    public class LabValue
+    public class Feedback
     {
         [Key]
         public int Id { get; set; }
@@ -14,17 +14,12 @@ namespace DuckLib
         [Column(TypeName = "INT")]
         public int SimulationCaseId { get; set; }
 
-        public string Name { get; set; } = null!;
+        public string Text { get; set; } = null!;
 
-        public string Value { get; set; } = null!;
-
-        public string Reference { get; set; } = null!;
-
-        public string Interpretation { get; set; } = null!;
+        public string? CreatedAt { get; set; }  // sql fills this
 
         [ForeignKey("SimulationCaseId")]
-        [InverseProperty("LabValues")]
-        public virtual SimulationCase? SimulationCase { get; set; } = null!;
-
+        [InverseProperty("Feedback")]
+        public virtual SimulationCase SimulationCase { get; set; } = null!;
     }
 }

@@ -18,6 +18,7 @@ public partial class DuckContext : DbContext
     }
 
     public virtual DbSet<CaseLog> CaseLogs { get; set; }
+    public virtual DbSet<Feedback> Feedback { get; set; }
     public virtual DbSet<Allergy> Allergies { get; set; }
 
     public virtual DbSet<Goal> Goals { get; set; }
@@ -151,6 +152,17 @@ public partial class DuckContext : DbContext
 
             entity.HasOne(d => d.SimulationCase)
                 .WithMany(p => p.CaseLogs)
+                .HasForeignKey(d => d.SimulationCaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Feedback>(entity =>
+        {
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime')");
+
+            entity.HasOne(d => d.SimulationCase)
+                .WithMany(p => p.Feedback)
                 .HasForeignKey(d => d.SimulationCaseId)
                 .OnDelete(DeleteBehavior.Cascade);
         });

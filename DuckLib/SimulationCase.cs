@@ -68,6 +68,7 @@ namespace DuckLib
 
         [InverseProperty("SimulationCase")]
         public virtual ICollection<CaseLog> CaseLogs { get; set; } = new List<CaseLog>();
+        public virtual ICollection<Feedback> Feedback { get; set; } = new List<Feedback>();
 
     }
 }

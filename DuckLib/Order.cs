@@ -25,7 +25,7 @@ namespace DuckLib
 
         public double Dose { get; set; }
 
-        public string DoseUnit { get; set; } = null!;
+        public string? DoseUnit { get; set; } = null!;
 
         public string Route { get; set; } = null!;
 
