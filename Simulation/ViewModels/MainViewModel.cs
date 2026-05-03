@@ -17,7 +17,6 @@ namespace Simulation.ViewModels
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private readonly SimulationCaseService _service;
         private DispatcherTimer _timer;
 
         public SimulationCase? ActiveCase {  get; set; }
@@ -60,8 +59,7 @@ namespace Simulation.ViewModels
 
         public MainViewModel()
         {
-            _service = new SimulationCaseService();
-            ActiveCase = _service.GetActive();
+            ActiveCase = DuckAPI.GetSimulationCases().FirstOrDefault(c => c.IsActive == 1);
 
             if (ActiveCase != null)
             {
@@ -69,9 +67,9 @@ namespace Simulation.ViewModels
                 LastVitals = ActiveCase.StartVitals;
                 CurrentDeltas = ActiveCase.StartDeltas ?? new VitalDeltas();
 
-                Orders = ActiveCase.Orders;
+                Orders = ActiveCase.Orders.ToList();
                 Goal = ActiveCase.Goals;
-                Allergies = ActiveCase.Allergies;
+                Allergies = ActiveCase.Allergies.ToList();
             }
 
             ConfirmCommand = new RelayCommand(Confirm);
@@ -100,7 +98,7 @@ namespace Simulation.ViewModels
             CurrentVitals.BPDiastolic += CurrentDeltas.BPDiastolicDelta;
             CurrentVitals.HeartRate += CurrentDeltas.HeartRateDelta;
             CurrentVitals.RespiratoryRate += CurrentDeltas.RespiratoryRateDelta;
-            CurrentVitals.OxygenSaturation += CurrentDeltas.SpO2Delta;
+            CurrentVitals.OxygenSaturation += CurrentDeltas.SpO2delta;
             CurrentVitals.Temperature += CurrentDeltas.TemperatureDelta;
 
             OnPropertyChanged(nameof(BloodPressure));
@@ -148,7 +146,7 @@ namespace Simulation.ViewModels
                 return;
             }
 
-            Allergy? triggered = Allergies.FirstOrDefault(a => a.AffectedMedications.Any(m => m.Name == SelectedMedication));
+            Allergy? triggered = Allergies.FirstOrDefault(a => a.Medications.Any(m => m.Name == SelectedMedication));
             if (triggered != null)
             {
                 Log($"CRITICAL: {SelectedMedication} is contraindicted - {triggered.Allergen}: {triggered.Reaction}");
@@ -179,7 +177,7 @@ namespace Simulation.ViewModels
                 CurrentDeltas.BPSystolicDelta += effect.BPSystolicDelta;
                 CurrentDeltas.BPDiastolicDelta += effect.BPDiastolicDelta;
                 CurrentDeltas.HeartRateDelta += effect.HeartRateDelta;
-                CurrentDeltas.SpO2Delta += effect.SpO2Delta;
+                CurrentDeltas.SpO2delta += effect.SpO2delta;
                 CurrentDeltas.RespiratoryRateDelta += effect.RespiratoryRateDelta;
                 CurrentDeltas.TemperatureDelta += effect.TemperatureDelta;
 
@@ -187,9 +185,11 @@ namespace Simulation.ViewModels
             }
         }
         
-        private void Log(string message) // In the future this will persist to database via the API, for now it is purely on simulation
+        private void Log(string message)
         {
             EventLog.Add($"[{DateTime.Now:HH:mm:ss}] {message}");
+
+            if (ActiveCase != null) DuckAPI.AddCaseLog(ActiveCase.Id, message);
         }
     }
 }
