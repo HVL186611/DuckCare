@@ -18,6 +18,7 @@ namespace DuckLib
             dx.SaveChanges();
         }
         public static void Update(SimulationCase sim) { 
+            using DuckContext dc = new();
             dx.Update(sim); 
             dx.SaveChanges(true);
         }
@@ -41,6 +42,22 @@ namespace DuckLib
         public static List<CaseLog> GetCaseLogs(int simulationCaseId)
         {
             return dx.CaseLogs.Where(c => c.SimulationCaseId == simulationCaseId).ToList();
+        }
+
+        public static List<Feedback> GetFeedback(int simulationCaseId)
+        {
+            return dx.Feedback.Where(c => c.SimulationCaseId == simulationCaseId).ToList();
+        }
+        public static void AddFeedback(int simulationCaseId, string text)
+        {
+            Feedback log = new Feedback
+            {
+                SimulationCaseId = simulationCaseId,
+                Text = text
+            };
+
+            dx.Feedback.Add(log);
+            dx.SaveChanges();
         }
     }
 }

@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="DuckCare.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="5493"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="2" parent="0"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="Allergies" custom_title="0" dock_id="2" table="4,9:mainAllergies"/><dock_state state="000000ff00000000fd00000001000000020000043b0000030efc0100000002fb000000160064006f0063006b00420072006f007700730065003101000000000000043b0000000000000000fb000000160064006f0063006b00420072006f007700730065003201000000000000043b0000011800ffffff0000026c0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Allergies" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="54"/><column index="3" value="57"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">
+/*
+    Root table
+*/
+
+CREATE TABLE SimulationCases (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    Title TEXT NOT NULL DEFAULT '',
+    Description TEXT NOT NULL DEFAULT '',
+
+    PatientId INT NULL,
+    StartVitalsId INT NULL,
+    StartDeltasId INT NULL,
+    GoalsId INT NULL,
+
+    GoalTimeMinutes INT NOT NULL DEFAULT 15,
+
+    StudentEditable INTEGER NOT NULL DEFAULT 1,
+    IsActive INTEGER NOT NULL DEFAULT 0,
+
+    CreatedByRole TEXT NOT NULL DEFAULT 'Student',
+    CreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT FK_SimulationCases_Patients
+        FOREIGN KEY (PatientId)
+        REFERENCES Patients(Id),
+
+    CONSTRAINT FK_SimulationCases_StartVitals
+        FOREIGN KEY (StartVitalsId)
+        REFERENCES Vitals(Id),
+
+    CONSTRAINT FK_SimulationCases_StartDeltas
+        FOREIGN KEY (StartDeltasId)
+        REFERENCES VitalDeltas(Id),
+
+    CONSTRAINT FK_SimulationCases_Goals
+        FOREIGN KEY (GoalsId)
+        REFERENCES Goals(Id)
+);
+
+
+/*
+    Patient
+*/
+
+CREATE TABLE Patients (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    Name TEXT NOT NULL DEFAULT '',
+    Age INT NOT NULL DEFAULT 0,
+    Sex TEXT NOT NULL DEFAULT '',
+
+    WeightKg REAL NOT NULL DEFAULT 0,
+    HeightCm REAL NOT NULL DEFAULT 0,
+
+    Bed TEXT NOT NULL DEFAULT '',
+    AdmissionDate TEXT NULL,
+
+    AdmittingDiagnosis TEXT NOT NULL DEFAULT '',
+    MedicalHistory TEXT NOT NULL DEFAULT '',
+    SurgicalHistory TEXT NOT NULL DEFAULT '',
+    SocialHistory TEXT NOT NULL DEFAULT '',
+    FamilyHistory TEXT NOT NULL DEFAULT ''
+);
+
+
+/*
+    Vitals
+    Add Id to the C# Vitals class.
+*/
+
+CREATE TABLE Vitals (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    BPSystolic INT NOT NULL DEFAULT 0,
+    BPDiastolic INT NOT NULL DEFAULT 0,
+    HeartRate INT NOT NULL DEFAULT 0,
+    RespiratoryRate INT NOT NULL DEFAULT 0,
+    OxygenSaturation INT NOT NULL DEFAULT 0,
+    Temperature REAL NOT NULL DEFAULT 0,
+
+    RecordedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+/*
+    VitalDeltas
+    Add Id to the C# VitalDeltas class.
+*/
+
+CREATE TABLE VitalDeltas (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    BPSystolicDelta INT NOT NULL DEFAULT 0,
+    BPDiastolicDelta INT NOT NULL DEFAULT 0,
+    HeartRateDelta INT NOT NULL DEFAULT 0,
+    RespiratoryRateDelta INT NOT NULL DEFAULT 0,
+    SpO2Delta INT NOT NULL DEFAULT 0,
+    TemperatureDelta INT NOT NULL DEFAULT 0
+);
+
+
+/*
+    Goals
+    Add Id to the C# Goal class.
+*/
+
+CREATE TABLE Goals (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    Description TEXT NOT NULL DEFAULT '',
+    TimerMinutes INT NOT NULL DEFAULT 0,
+
+    SystolicBPMin INT NULL,
+    SystolicBPMax INT NULL,
+
+    DiastolicBPMin INT NULL,
+    DiastolicBPMax INT NULL,
+
+    HeartRateMin INT NULL,
+    HeartRateMax INT NULL,
+
+    RespiratoryRateMin INT NULL,
+    RespiratoryRateMax INT NULL,
+
+    SpO2Min REAL NULL,
+    SpO2Max REAL NULL,
+
+    TemperatureMin REAL NULL,
+    TemperatureMax REAL NULL
+);
+
+
+/*
+    Medications
+    Matches Medication.cs
+*/
+
+CREATE TABLE Medications (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    Name TEXT NOT NULL DEFAULT '',
+
+    -- Optional fields used when medication is attached to a patient
+    Route TEXT NULL,
+    Dose TEXT NULL,
+    Frequency TEXT NULL
+);
+
+
+/*
+    Orders
+    Used by:
+    - SimulationCase.Orders
+    - Patient.Medications
+
+    DeltaChange is stored as a VitalDeltas row.
+*/
+
+CREATE TABLE Orders (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    SimulationCaseId INT NULL,
+    PatientId INT NULL,
+
+    MedicationId INT NOT NULL,
+    DeltaChangeId INT NULL,
+
+    Dose REAL NOT NULL DEFAULT 0,
+    DoseUnit TEXT NOT NULL DEFAULT 'mg',
+    Route TEXT NOT NULL DEFAULT '',
+    Timing TEXT NOT NULL DEFAULT '',
+
+    CONSTRAINT FK_Orders_SimulationCases
+        FOREIGN KEY (SimulationCaseId)
+        REFERENCES SimulationCases(Id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_Orders_Patients
+        FOREIGN KEY (PatientId)
+        REFERENCES Patients(Id)
+        ON DELETE NO ACTION,
+
+    CONSTRAINT FK_Orders_Medications
+        FOREIGN KEY (MedicationId)
+        REFERENCES Medications(Id),
+
+    CONSTRAINT FK_Orders_DeltaChange
+        FOREIGN KEY (DeltaChangeId)
+        REFERENCES VitalDeltas(Id)
+);
+
+
+/*
+    Allergies
+*/
+
+CREATE TABLE Allergies (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    Allergen TEXT NOT NULL DEFAULT '',
+    Reaction TEXT NOT NULL DEFAULT ''
+);
+
+
+/*
+    SimulationCase.Allergies
+*/
+
+CREATE TABLE SimulationCaseAllergies (
+    SimulationCaseId INT NOT NULL,
+    AllergyId INT NOT NULL,
+
+    PRIMARY KEY (SimulationCaseId, AllergyId),
+
+    CONSTRAINT FK_SimulationCaseAllergies_SimulationCases
+        FOREIGN KEY (SimulationCaseId)
+        REFERENCES SimulationCases(Id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_SimulationCaseAllergies_Allergies
+        FOREIGN KEY (AllergyId)
+        REFERENCES Allergies(Id)
+        ON DELETE CASCADE
+);
+
+
+/*
+    Patient.Allergies
+*/
+
+CREATE TABLE PatientAllergies (
+    PatientId INT NOT NULL,
+    AllergyId INT NOT NULL,
+
+    PRIMARY KEY (PatientId, AllergyId),
+
+    CONSTRAINT FK_PatientAllergies_Patients
+        FOREIGN KEY (PatientId)
+        REFERENCES Patients(Id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_PatientAllergies_Allergies
+        FOREIGN KEY (AllergyId)
+        REFERENCES Allergies(Id)
+        ON DELETE CASCADE
+);
+
+
+/*
+    Allergy.AffectedMedications
+*/
+
+CREATE TABLE AllergyAffectedMedications (
+    AllergyId INT NOT NULL,
+    MedicationId INT NOT NULL,
+
+    PRIMARY KEY (AllergyId, MedicationId),
+
+    CONSTRAINT FK_AllergyAffectedMedications_Allergies
+        FOREIGN KEY (AllergyId)
+        REFERENCES Allergies(Id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_AllergyAffectedMedications_Medications
+        FOREIGN KEY (MedicationId)
+        REFERENCES Medications(Id)
+        ON DELETE CASCADE
+);
+
+
+/*
+    LabValues
+    Matches LabValue.cs
+
+    LabValue currently has:
+        public int Id = -1;
+
+    I would change that to:
+        public int Id { get; set; } = -1;
+*/
+
+CREATE TABLE LabValues (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    SimulationCaseId INT NOT NULL,
+
+    Name TEXT NOT NULL DEFAULT '',
+    Value TEXT NOT NULL DEFAULT '',
+    Reference TEXT NOT NULL DEFAULT '',
+    Interpretation TEXT NOT NULL DEFAULT '',
+
+    CONSTRAINT FK_LabValues_SimulationCases
+        FOREIGN KEY (SimulationCaseId)
+        REFERENCES SimulationCases(Id)
+        ON DELETE CASCADE
+);
+
+PRAGMA foreign_keys = ON;
+</sql><sql name="SQL 2*">CREATE TABLE CaseLogs (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    SimulationCaseId INTEGER NOT NULL,
+    Text TEXT NOT NULL,
+    CreatedAt TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime')),
+
+    FOREIGN KEY (SimulationCaseId)
+        REFERENCES SimulationCases(Id)
+        ON DELETE CASCADE
+);</sql><current_tab id="0"/></tab_sql></sqlb_project>
