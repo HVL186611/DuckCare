@@ -25,5 +25,22 @@ namespace DuckLib
         public static SimulationCase? GetSimulationCase(int Id) { return dx.SimulationCases.Where(s => s.Id == Id).FirstOrDefault(); }
         public static List<Medication> GetMedications() { return dx.Medications.ToList(); }
         public static Medication? GetMedication(int Id) { return dx.Medications.Where(s => s.Id == Id).FirstOrDefault(); }
+
+        public static void AddCaseLog(int simulationCaseId, string text)
+        {
+            CaseLog log = new CaseLog
+            {
+                SimulationCaseId = simulationCaseId,
+                Text = text
+            };
+
+            dx.CaseLogs.Add(log);
+            dx.SaveChanges();
+        }
+
+        public static List<CaseLog> GetCaseLogs(int simulationCaseId)
+        {
+            return dx.CaseLogs.Where(c => c.SimulationCaseId == simulationCaseId).ToList();
+        }
     }
 }

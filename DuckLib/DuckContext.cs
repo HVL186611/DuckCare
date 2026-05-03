@@ -17,6 +17,7 @@ public partial class DuckContext : DbContext
     {
     }
 
+    public virtual DbSet<CaseLog> CaseLogs { get; set; }
     public virtual DbSet<Allergy> Allergies { get; set; }
 
     public virtual DbSet<Goal> Goals { get; set; }
@@ -141,6 +142,17 @@ public partial class DuckContext : DbContext
         modelBuilder.Entity<Vitals>(entity =>
         {
             entity.Property(e => e.RecordedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+        });
+
+        modelBuilder.Entity<CaseLog>(entity =>
+        {
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime')");
+
+            entity.HasOne(d => d.SimulationCase)
+                .WithMany(p => p.CaseLogs)
+                .HasForeignKey(d => d.SimulationCaseId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -66,6 +66,8 @@ namespace DuckLib
         [InverseProperty("SimulationCases")]
         public virtual ICollection<Allergy> Allergies { get; set; } = new List<Allergy>();
 
+        [InverseProperty("SimulationCase")]
+        public virtual ICollection<CaseLog> CaseLogs { get; set; } = new List<CaseLog>();
 
     }
 }
