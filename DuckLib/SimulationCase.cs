@@ -1,159 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace DuckLib
 {
     public class SimulationCase
     {
-        public int Id { get; set; } = 0;
+        [Key]
+        public int Id { get; set; }
 
-        // case info
-        public string Title { get; set; } = "";
-        public string Description { get; set; } = "";
+        public string Title { get; set; } = null!;
 
-        // simulation content
-        public Patient Patient { get; set; } = new();
-        public Vitals StartVitals { get; set; } = new();
-        public List<LabValue> LabValues { get; set; } = new();
-        public VitalDeltas StartDeltas { get; set; } = new();
-        public List<Allergy> Allergies { get; set; } = new();
+        public string Description { get; set; } = null!;
 
-        // simulation goals
-        //public List<Goal> Goals { get; set; } = new();
-        public Goal Goals { get; set; } = new(); 
-        /* Goal
-        {
-            TimerMinutes = 60,
-            SystolicBP = (90, 120),
-            DiastolicBP = (80, 90),
-            HeartRate = (60, 100),
-            RespiratoryRate = (12, 20),
-            SpO2 = (95, 100),
-            Temperature = (36.1, 37.2)
-        }*/
-        public List<Order> Orders { get; set; } = new();
-        public int GoalTimeMinutes { get; set; } = 15; // This should be cut
+        [Column(TypeName = "INT")]
+        public int? PatientId { get; set; }
 
-        // simulation config
-        public bool StudentEditable { get; set; } = true;
-        public bool IsActive { get; set; } = false;
+        [Column(TypeName = "INT")]
+        public int? StartVitalsId { get; set; }
 
-        // meta?
-        public string CreatedByRole { get; set; } = "Student";
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        [Column(TypeName = "INT")]
+        public int? StartDeltasId { get; set; }
 
-        public static SimulationCase FromEntity(DuckLib.Models.SimulationCase entity)
-        {
-            return new SimulationCase
-            {
-                Id = entity.Id,
-                Title = entity.Title,
-                Description = entity.Description,
-                Patient = new Patient
-                {
-                    Name = entity.PatientName,
-                    Sex = entity.PatientSex,
-                    WeightKg = (double) entity.PatientWeightKg,
-                    HeightCm = (double) entity.PatientHeightCm,
-                    AdmittingDiagnosis = entity.PatientAdmittingDiagnosis,
-                    MedicalHistory = entity.PatientMedicalHistory,
-                },
-                StartVitals = new Vitals
-                {
-                    BPDiastolic = entity.Bpdiastolic ?? 0,
-                    BPSystolic = entity.Bpsystolic ?? 0,
-                    HeartRate = entity.HeartRate ?? 0,
-                    RespiratoryRate = entity.RespiratoryRate ?? 0,
-                    OxygenSaturation = entity.OxygenSaturation ?? 0,
-                    Temperature = entity.Temperature ?? 0,
-                },
-                StartDeltas = new VitalDeltas
-                {
-                    BPDiastolicDelta = entity.BpdiastolicDelta ?? 0,
-                    BPSystolicDelta = entity.BpsystolicDelta ?? 0,
-                    HeartRateDelta = entity.HeartRateDelta ?? 0,
-                    RespiratoryRateDelta = entity.RespiratoryRateDelta ?? 0,
-                    SpO2Delta = entity.SpO2delta ?? 0,
-                    TemperatureDelta = entity.TemperatureDelta ?? 0
-                },
-                StudentEditable = entity.StudentEditable ?? true,
-                IsActive = entity.IsActive ?? false,
-                CreatedByRole = entity.CreatedByRole ?? "",
-                Goals = new Goal
-                {
-                    Description = entity.GoalDescription,
-                    TimerMinutes = entity.GoalTimerMinutes ?? 0,
-                    SystolicBP = (entity.GoalSystolicBpmin ?? 0, entity.GoalSystolicBpmax ?? 0),
-                    DiastolicBP = (entity.GoalDistolicBpmin ?? 0, entity.GoalDistolicBpmax ?? 0),
-                    HeartRate = (entity.GoalHeartRateMin ?? 0, entity.GoalHeartRateMax ?? 0),
-                    RespiratoryRate = (entity.GoalRespiratoryRateMin ?? 0, entity.GoalRespiratoryRateMax ?? 0),
-                    SpO2 = (entity.GoalSp02Min ?? 0, entity.GoalSp02Max ?? 0),
-                    Temperature = (entity.GoalTemperatureMin ?? 0, entity.GoalTemperatureMax ?? 0),
-                },
-                LabValues = LabValue.FromEntity(entity.LabValues),
-                Orders = Order.FromEntity(entity.Orders)
-            };
-        }
+        [Column(TypeName = "INT")]
+        public int? GoalsId { get; set; }
 
-        public DuckLib.Models.SimulationCase ToEntity()
-        {
-            return new DuckLib.Models.SimulationCase
-            {
-                Id = Id,
-                Title = Title,
-                Description = Description,
+        [Column(TypeName = "INT")]
+        public int GoalTimeMinutes { get; set; }
 
-                PatientName = Patient.Name,
-                PatientSex = Patient.Sex,
-                PatientWeightKg = (int)Patient.WeightKg,
-                PatientHeightCm = (int)Patient.HeightCm,
-                PatientAdmittingDiagnosis = Patient.AdmittingDiagnosis,
-                PatientMedicalHistory = Patient.MedicalHistory,
+        public int StudentEditable { get; set; }
 
-                Bpdiastolic = StartVitals.BPDiastolic,
-                Bpsystolic = StartVitals.BPSystolic,
-                HeartRate = StartVitals.HeartRate,
-                RespiratoryRate = StartVitals.RespiratoryRate,
-                OxygenSaturation = StartVitals.OxygenSaturation,
-                Temperature = (int)StartVitals.Temperature,
+        public int IsActive { get; set; }
 
-                BpdiastolicDelta = StartDeltas.BPDiastolicDelta,
-                BpsystolicDelta = StartDeltas.BPSystolicDelta,
-                HeartRateDelta = StartDeltas.HeartRateDelta,
-                RespiratoryRateDelta = StartDeltas.RespiratoryRateDelta,
-                SpO2delta = StartDeltas.SpO2Delta,
-                TemperatureDelta = StartDeltas.TemperatureDelta,
+        public string? CreatedByRole { get; set; } = null!;
 
-                StudentEditable = StudentEditable,
-                IsActive = IsActive,
-                CreatedByRole = CreatedByRole,
+        public string? CreatedAt { get; set; } = null!;
 
-                GoalDescription = Goals?.Description,
-                GoalTimerMinutes = Goals?.TimerMinutes,
+        public string? UpdatedAt { get; set; } = null!;
 
-                GoalSystolicBpmin = Goals?.SystolicBP?.Min,
-                GoalSystolicBpmax = Goals?.SystolicBP?.Max,
+        [ForeignKey("GoalsId")]
+        [InverseProperty("SimulationCases")]
+        public virtual Goal? Goals { get; set; } = new();
 
-                GoalDistolicBpmin = Goals?.DiastolicBP?.Min,
-                GoalDistolicBpmax = Goals?.DiastolicBP?.Max,
+        [InverseProperty("SimulationCase")]
+        public virtual ICollection<LabValue> LabValues { get; set; } = new List<LabValue>();
 
-                GoalHeartRateMin = Goals?.HeartRate?.Min,
-                GoalHeartRateMax = Goals?.HeartRate?.Max,
+        [InverseProperty("SimulationCase")]
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-                GoalRespiratoryRateMin = Goals?.RespiratoryRate?.Min,
-                GoalRespiratoryRateMax = Goals?.RespiratoryRate?.Max,
+        [ForeignKey("PatientId")]
+        [InverseProperty("SimulationCases")]
+        public virtual Patient? Patient { get; set; } = new();
 
-                GoalSp02Min = Goals?.SpO2?.Min,
-                GoalSp02Max = Goals?.SpO2?.Max,
+        [ForeignKey("StartDeltasId")]
+        [InverseProperty("SimulationCases")]
+        public virtual VitalDeltas? StartDeltas { get; set; } = new();
 
-                GoalTemperatureMin = Goals?.Temperature?.Min,
-                GoalTemperatureMax = Goals?.Temperature?.Max,
+        [ForeignKey("StartVitalsId")]
+        [InverseProperty("SimulationCases")]
+        public virtual Vitals? StartVitals { get; set; } = new();
 
-                LabValues = LabValues.Select(labValue => labValue.ToEntity(Id)).ToList(),
-                Orders = Orders.Select(order => order.ToEntity(Id)).ToList()
-            };
-        }
+        [ForeignKey("SimulationCaseId")]
+        [InverseProperty("SimulationCases")]
+        public virtual ICollection<Allergy> Allergies { get; set; } = new List<Allergy>();
+
+
     }
 }

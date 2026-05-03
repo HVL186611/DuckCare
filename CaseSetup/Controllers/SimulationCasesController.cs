@@ -21,14 +21,14 @@ namespace CaseSetup.Controllers
 
         private void fillViewBag()
         {
-            ViewBag.Medications = _caseService.GetMedications();
+            ViewBag.Medications = _caseService.GetMedicationNames();
         }
 
         public IActionResult Index()
         {
             if (shouldLogin()) return RedirectToAction("Login", "Account");
 
-            List<SimulationCase> cases = _caseService.GetAll();
+            List<SimulationCase> cases = _caseService.GetAllCases();
 
             return View(cases);
         }
@@ -63,18 +63,28 @@ namespace CaseSetup.Controllers
         public IActionResult Create(SimulationCase simulationCase)
         {
             // (hopefully) sends form back to Create view to be filled in
-            if (!ModelState.IsValid) return View(simulationCase);
+            if (!ModelState.IsValid) { 
+                fillViewBag();
+                return View(simulationCase); 
+            }
+            fillViewBag();
 
             // allowing anyone to create as student if not logged in
             // you shouldn't get to this page without logging in, but just in case...
-            simulationCase.CreatedByRole = HttpContext.Session.GetString("Role") ?? "student";
+            if (simulationCase.CreatedByRole == null) 
+                simulationCase.CreatedByRole = HttpContext.Session.GetString("Role") ?? "student";
 
+            simulationCase.CreatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            simulationCase.UpdatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            _caseService.Add(simulationCase);
+            /*
             // add/update case database
             if (simulationCase.Id == 0)  // new cases have Id=0
                 _caseService.Add(simulationCase);
             else
             {
-                if (!simulationCase.StudentEditable && HttpContext.Session.GetString("Role") != "teacher")
+                if (!(simulationCase.StudentEditable == 1) && HttpContext.Session.GetString("Role") != "teacher")
                 {
                     ModelState.AddModelError("", "Only teachers can edit this case.");  // i don't think this works, but it shouldnt be possible for students to get to this page anyways
                     return View(simulationCase);
@@ -82,8 +92,36 @@ namespace CaseSetup.Controllers
                 _caseService.Update(simulationCase);
             }
             // -----------
+            //*/
 
             // return to case list
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        //[ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, SimulationCase simulationCase)
+        {
+            if (shouldLogin()) return RedirectToAction("Login", "Account");
+
+            fillViewBag();
+
+            if (id != simulationCase.Id) return BadRequest();
+            simulationCase.UpdatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            SimulationCase? existing = _caseService.GetById(id);
+            if (existing == null) return NotFound();
+
+            if (existing.StudentEditable != 1 && HttpContext.Session.GetString("Role") != "teacher")
+            {
+                ModelState.AddModelError("", "Only teachers can edit this case.");
+                return View("Create", simulationCase);
+            }
+
+            if (!ModelState.IsValid) return View("Create", simulationCase);
+
+            _caseService.Update(simulationCase);
+
             return RedirectToAction(nameof(Index));
         }
 

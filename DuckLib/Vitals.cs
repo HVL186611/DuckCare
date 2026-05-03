@@ -1,19 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace DuckLib
 {
     public class Vitals
     {
-        public int BPSystolic { get; set; } = 0;  // pressure while heart beats
-        public int BPDiastolic { get; set; } = 0;  // pressure while heart rests
-        public int HeartRate { get; set; } = 0;
-        public int RespiratoryRate { get; set; } = 0;
-        public int OxygenSaturation { get; set; } = 0;
-        public double Temperature { get; set; } = 0.0;
+        [Key]
+        public int Id { get; set; }
 
-        // could be useful for log
-        public DateTime RecordedAt { get; set; } = DateTime.Now;
+        [Column("BPSystolic", TypeName = "INT")]
+
+        public int BPSystolic { get; set; }
+
+        [Column("BPDiastolic", TypeName = "INT")]
+        public int BPDiastolic { get; set; }
+
+        [Column(TypeName = "INT")]
+        public int HeartRate { get; set; }
+
+        [Column(TypeName = "INT")]
+        public int RespiratoryRate { get; set; }
+
+        [Column(TypeName = "INT")]
+        public int OxygenSaturation { get; set; }
+
+        public double Temperature { get; set; }
+
+        public string? RecordedAt { get; set; } = null!;
+
+        [InverseProperty("StartVitals")]
+        public virtual ICollection<SimulationCase> SimulationCases { get; set; } = new List<SimulationCase>();
     }
+
 }

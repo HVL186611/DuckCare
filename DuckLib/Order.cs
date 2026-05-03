@@ -1,50 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace DuckLib
 {
     public class Order
     {
-        public Medication Medication { get; set; } = new();
-        public double Dose { get; set; } // Amount, true amount set in tandem with unit
-        public string DoseUnit { get; set; } = "mg"; // Selected from a dropdown in UI
-        public string Route { get; set; } = "";
-        public string Timing { get; set; } = "";
-        public VitalDeltas DeltaChange { get; set; } = new(); // Values will be *added not replace* to update the deltas after administration
+        [Key]
+        public int Id { get; set; }
 
-        public int Id = -1; // for conversion. if Id==-1, assign Id before saving to database
-        
-        internal static List<Order> FromEntity(ICollection<Models.Order> entities)
-        {
-            List<Order> result = new();
-            foreach (var e in entities)
-            {
-                result.Add(new Order
-                {
-                    Id = e.Id,
-                    Medication = DuckAPI.GetMedication(e.MedicationId ?? 0),
-                    Dose = (double)e.Dose,
-                    DoseUnit = e.DoseUnit,
-                    Route = e.Route,
-                    Timing = e.Timing,
-                });
-            }
-            return result;
-        }
+        [Column(TypeName = "INT")]
+        public int? SimulationCaseId { get; set; }
 
-        internal DuckLib.Models.Order ToEntity(int SimulationId)
-        {
-            return new DuckLib.Models.Order
-            {
-                Id = Id,
-                SimulationId = SimulationId,
-                MedicationId = Medication.Id,
-                Dose = (double)Dose,
-                DoseUnit = DoseUnit,
-                Route = Route,
-                Timing = Timing,
-            };
-        }
+        [Column(TypeName = "INT")]
+        public int? PatientId { get; set; }
+
+        [Column(TypeName = "INT")]
+        public int MedicationId { get; set; }
+
+        [Column(TypeName = "INT")]
+        public int? DeltaChangeId { get; set; }
+
+        public double Dose { get; set; }
+
+        public string DoseUnit { get; set; } = null!;
+
+        public string Route { get; set; } = null!;
+
+        public string Timing { get; set; } = null!;
+
+        [ForeignKey("DeltaChangeId")]
+        [InverseProperty("Orders")]
+        public virtual VitalDeltas? DeltaChange { get; set; }
+
+        [ForeignKey("MedicationId")]
+        //[InverseProperty("Medications")]
+        public virtual Medication Medication { get; set; } = null!;
+
+        [ForeignKey("PatientId")]
+        [InverseProperty("Medications")]
+        public virtual Patient? Patient { get; set; }
+
+        [ForeignKey("SimulationCaseId")]
+        [InverseProperty("Orders")]
+        public virtual SimulationCase? SimulationCase { get; set; }
     }
+
 }

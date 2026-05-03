@@ -6,4 +6,5 @@
   <Project Path="DuckLib/DuckLib.csproj" />
   <Project Path="Simulation/Simulation.csproj" />
   <Project Path="TeacherAssessment/TeacherAssessment.csproj" Id="5e0305eb-32c0-4d94-b4b3-41b475356dcf" />
+  <Project Path="TestAPI/ApiTest.csproj" Id="2a7c85d5-e99c-4617-b3cc-043030704259" />
 </Solution>

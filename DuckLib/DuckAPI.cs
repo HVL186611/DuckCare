@@ -1,18 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Intrinsics.Arm;
 using System.Text;
+using TestLib.Temp;
 
 namespace DuckLib
 {
     public class DuckAPI
     {
-        public static Medication GetMedication(int Id)
-        {
-            DuckLib.Models.Medication entity = dx.Medication; // fetch from database using Id
-            return Medication.FromEntity(entity);
-            //return new Medication();
+        public static readonly DuckContext dx = new();  // todo: make private when testing is done
+
+        public static void Add(SimulationCase sim) { 
+            dx.Add(sim);
+            dx.SaveChanges();
         }
+        public static void RemoveCase(SimulationCase sim) { 
+            dx.Remove(sim); 
+            dx.SaveChanges();
+        }
+        public static void Update(SimulationCase sim) { 
+            dx.Update(sim); 
+            dx.SaveChanges(true);
+        }
+        public static List<SimulationCase> GetSimulationCases() { return dx.SimulationCases.ToList(); }
+        public static SimulationCase? GetSimulationCase(int Id) { return dx.SimulationCases.Where(s => s.Id == Id).FirstOrDefault(); }
+        public static List<Medication> GetMedications() { return dx.Medications.ToList(); }
+        public static Medication? GetMedication(int Id) { return dx.Medications.Where(s => s.Id == Id).FirstOrDefault(); }
     }
 }

@@ -1,44 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace DuckLib
 {
     public class LabValue
     {
-        public string Name { get; set; } = "";
-        public string Value { get; set; } = "";
-        public string Reference { get; set; } = "";
-        public string Interpretation { get; set; } = "";
+        [Key]
+        public int Id { get; set; }
 
-        public int Id = -1; // for conversion. if Id==-1, assign Id before saving to database
+        [Column(TypeName = "INT")]
+        public int SimulationCaseId { get; set; }
 
-        internal static List<LabValue> FromEntity(ICollection<Models.LabValue> entities)
-        {
-            List<LabValue> result = new();
-            foreach (var e in entities)
-            {
-                result.Add(new LabValue
-                {
-                    Id = e.Id,
-                    Value = e.Value,
-                    Reference = e.Reference,
-                    Interpretation = e.Interpretation
-                });
-            }
-            return result;
-        }
+        public string Name { get; set; } = null!;
 
-        internal DuckLib.Models.LabValue ToEntity(int SimulationId)
-        {
-            return new DuckLib.Models.LabValue
-            {
-                Id = Id,
-                SimulationId = SimulationId,
-                Value = Value,
-                Reference = Reference,
-                Interpretation = Interpretation
-            };
-        }
+        public string Value { get; set; } = null!;
+
+        public string Reference { get; set; } = null!;
+
+        public string Interpretation { get; set; } = null!;
+
+        [ForeignKey("SimulationCaseId")]
+        [InverseProperty("LabValues")]
+        public virtual SimulationCase SimulationCase { get; set; } = null!;
+
     }
 }

@@ -4,7 +4,7 @@
 
 @{
     ViewData["Title"] = "Case Details";
-    bool isEditable = Model.StudentEditable ? true : Context.Session.GetString("Role") == "teacher";
+    bool isEditable = Model.StudentEditable == 1 ? true : Context.Session.GetString("Role") == "teacher";
 }
 <p>
     <a asp-action="Index" class="btn btn-secondary">Back to cases</a>
@@ -24,7 +24,7 @@
 <p class="lead">@Model.Description</p>
 
 <div class="mb-3">
-    @if (Model.IsActive)
+    @if (Model.IsActive == 1)
     {
         <span class="badge bg-success">Active</span>
     }

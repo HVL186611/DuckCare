@@ -1,36 +1,31 @@
 ﻿ using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace DuckLib
 {
     public class Medication
     {
+        [Key]
         public int Id { get; set; }
-        public string Name { get; set; } = "";
 
-        // for patient medications:
+        public string Name { get; set; } = null!;
+
         public string? Route { get; set; }
+
         public string? Dose { get; set; }
+
         public string? Frequency { get; set; }
 
-        public static Medication FromEntity(DuckLib.Models.Medication entity)
-        {
-            return new Medication
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-            };
-        }
+        //[InverseProperty("Medication")]
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-        public DuckLib.Models.Medication ToEntity()
-        {
-            return new DuckLib.Models.Medication
-            {
-                Id = this.Id,
-                Name = this.Name,
-            };
-        }
+        //[ForeignKey("MedicationId")]
+        //[InverseProperty("Medication")]
+        public virtual ICollection<Allergy> Allergies { get; set; } = new List<Allergy>();
+
     }
 
 }

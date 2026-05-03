@@ -4,6 +4,14 @@
     bool isEdit = Model.Id != 0;
     var medications = ViewBag.Medications as List<string> ?? new List<string> { "Could not fetch medications." };
     ViewData["Title"] = isEdit ? "Edit Simulation Case" : "Create Simulation Case";
+
+    // type conversion
+    var allergies = Model.Patient.Allergies.ToList();
+    var labvalues = Model.LabValues.ToList();
+	var medicationsList = Model.Patient.Medications.ToList();
+	var orders = Model.Orders.ToList();
+    
+    var actionName = Model.Id == 0 ? "Create" : "Edit";
 }
 
 <h1>@(isEdit ? "Edit \"" + Model.Title + '"' : "Create Simulation Case")</h1>
@@ -12,10 +20,22 @@
     Fill in the details for the scenario, patient, starting vitals, and simulation goals.
 </p>
 
-<form asp-action="Create" method="post">
+<form asp-action="@actionName" method="post">
     <div asp-validation-summary="All" class="text-danger mb-3"></div>
-    <!-- hidden Id field so create page can be reused for updates as well -->
+    <!-- hidden Id fields for updates -->
     <input type="hidden" asp-for="Id" />
+
+    <input type="hidden" asp-for="PatientId" />
+    <input type="hidden" asp-for="Patient.Id" />
+
+    <input type="hidden" asp-for="StartVitalsId" />
+    <input type="hidden" asp-for="StartVitals.Id" />
+
+    <input type="hidden" asp-for="StartDeltasId" />
+    <input type="hidden" asp-for="StartDeltas.Id" />
+
+    <input type="hidden" asp-for="GoalsId" />
+    <input type="hidden" asp-for="Goals.Id" />
 
     <div class="card mb-4">
         <div class="card-body">
@@ -135,7 +155,7 @@
                                 <div class="col-md-5">
                                     <label class="form-label fw-bold">Allergen</label>
                                     <input name="Patient.Allergies[@i].Allergen"
-                                           value="@Model.Patient.Allergies[i].Allergen"
+                                           value="@allergies[i].Allergen"
                                            class="form-control"
                                            placeholder="Example: Potatoes" />
                                 </div>
@@ -143,7 +163,7 @@
                                 <div class="col-md-5">
                                     <label class="form-label fw-bold">Reaction</label>
                                     <input name="Patient.Allergies[@i].Reaction"
-                                           value="@Model.Patient.Allergies[i].Reaction"
+                                           value="@allergies[i].Reaction"
                                            class="form-control"
                                            placeholder="Tummy ache :<" />
                                 </div>
@@ -168,7 +188,7 @@
                 <legend class="float-none w-auto px-2 fs-5 fw-bold">Current Medications</legend>
 
                 <div id="medications-list">
-                    @for (int i = 0; i < Model.Patient.Medications.Count; i++)
+                    @for (int i = 0; i < medicationsList.Count; i++)
                     {
                         <div class="border rounded p-3 mb-3 medication-row">
                             <div class="row g-3 align-items-end">
@@ -179,7 +199,7 @@
 
                                         @foreach (string medicationName in medications)
                                         {
-                                            if (Model.Patient.Medications[i].Medication.Name == medicationName)
+                                            if (medicationsList[i].Medication.Name == medicationName)
                                             {
                                                 <option value="@medicationName" selected>@medicationName</option>
                                             }
@@ -194,7 +214,7 @@
                                 <div class="col-md-2">
                                     <label class="form-label fw-bold">Dose</label>
                                     <input name="Patient.Medications[@i].Dose"
-                                           value="@Model.Patient.Medications[i].Dose"
+                                           value="@medicationsList[i].Dose"
                                            class="form-control"
                                            placeholder="5 slices" />
                                 </div>
@@ -202,7 +222,7 @@
                                 <div class="col-md-2">
                                     <label class="form-label fw-bold">Route</label>
                                     <input name="Patient.Medications[@i].Route"
-                                           value="@Model.Patient.Medications[i].Route"
+                                           value="@medicationsList[i].Route"
                                            class="form-control"
                                            placeholder="Mouth" />
                                 </div>
@@ -210,7 +230,7 @@
                                 <div class="col-md-3">
                                     <label class="form-label fw-bold">Frequency</label>
                                     <input name="Patient.Medications[@i].Timing"
-                                           value="@Model.Patient.Medications[i].Timing"
+                                           value="@medicationsList[i].Timing"
                                            class="form-control"
                                            placeholder="Once daily" />
                                 </div>
@@ -242,7 +262,7 @@
                                 <div class="col-md-3">
                                     <label class="form-label fw-bold">Name</label>
                                     <input name="LabValues[@i].Name"
-                                           value="@Model.LabValues[i].Name"
+                                           value="@labvalues[i].Name"
                                            class="form-control"
                                            placeholder="Feathers" />
                                 </div>
@@ -250,7 +270,7 @@
                                 <div class="col-md-2">
                                     <label class="form-label fw-bold">Value</label>
                                     <input name="LabValues[@i].Value"
-                                           value="@Model.LabValues[i].Value"
+                                           value="@labvalues[i].Value"
                                            class="form-control"
                                            placeholder="Very shiny" />
                                 </div>
@@ -258,7 +278,7 @@
                                 <div class="col-md-3">
                                     <label class="form-label fw-bold">Reference</label>
                                     <input name="LabValues[@i].Reference"
-                                           value="@Model.LabValues[i].Reference"
+                                           value="@labvalues[i].Reference"
                                            class="form-control"
                                            placeholder="Shiny" />
                                 </div>
@@ -266,7 +286,7 @@
                                 <div class="col-md-2">
                                     <label class="form-label fw-bold">Interpretation</label>
                                     <input name="LabValues[@i].Interpretation"
-                                           value="@Model.LabValues[i].Interpretation"
+                                           value="@labvalues[i].Interpretation"
                                            class="form-control"
                                            placeholder="duck=pretty" />
                                 </div>
@@ -410,7 +430,7 @@
                 </p>
 
                 <div id="orders-list">
-                    @for (int i = 0; i < Model.Orders.Count; i++)
+                    @for (int i = 0; i < orders.Count; i++)
                     {
                         <div class="border rounded p-3 mb-3 order-row">
                             <div class="row g-3 align-items-end">
@@ -421,7 +441,7 @@
 
                                         @foreach (string medicationName in medications)
                                         {
-                                            if (Model.Orders[i].Medication.Name == medicationName)
+                                            if (orders[i].Medication.Name == medicationName)
                                             {
                                                 <option value="@medicationName" selected>@medicationName</option>
                                             }
@@ -436,7 +456,7 @@
                                 <div class="col-md-2">
                                     <label class="form-label fw-bold">Dose</label>
                                     <input name="Orders[@i].Dose"
-                                           value="@Model.Orders[i].Dose"
+                                           value="@orders[i].Dose"
                                            class="form-control"
                                            placeholder="20" />
                                 </div>
@@ -446,7 +466,7 @@
                                     <select name="Orders[@i].DoseUnit" class="form-select">
                                         @foreach (string doseUnit in new List<string> { "mg", "g", "mcg", "mL", "L", "IE", "mmol" })
                                         {
-                                            if (Model.Orders[i].DoseUnit == doseUnit)
+                                            if (orders[i].DoseUnit == doseUnit)
                                             {
                                                 <option value="@doseUnit" selected>@doseUnit</option>
                                             }
@@ -461,7 +481,7 @@
                                 <div class="col-md-2">
                                     <label class="form-label fw-bold">Route</label>
                                     <input name="Orders[@i].Route"
-                                           value="@Model.Orders[i].Route"
+                                           value="@orders[i].Route"
                                            class="form-control"
                                            placeholder="Example: IV" />
                                 </div>
@@ -469,7 +489,7 @@
                                 <div class="col-md-2">
                                     <label class="form-label fw-bold">Timing</label>
                                     <input name="Orders[@i].Timing"
-                                           value="@Model.Orders[i].Timing"
+                                           value="@orders[i].Timing"
                                            class="form-control"
                                            placeholder="STAT / PRN" />
                                 </div>
@@ -506,10 +526,10 @@
         const medications = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(medications));
         const doseUnits = ["mg", "g", "mcg", "mL", "L", "IE", "mmol"];
 
-        let allergyIndex = @Model.Patient.Allergies.Count;
-        let medicationIndex = @Model.Patient.Medications.Count;
-        let labValueIndex = @Model.LabValues.Count;
-        let orderIndex = @Model.Orders.Count;
+        let allergyIndex = @allergies.Count;
+        let medicationIndex = @medicationsList.Count;
+        let labValueIndex = @labvalues.Count;
+        let orderIndex = @orders.Count;
 
         function removeRow(button) {
             const row = button.closest(".border.rounded");
