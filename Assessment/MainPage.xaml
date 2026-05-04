@@ -16,10 +16,15 @@
 
         <VerticalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Start">
             <Entry x:Name="FeedbackEntry" 
-                   Placeholder="Give feedback"
-                   ReturnCommand="{Binding SendCommand}"
-                   ReturnType="Send"/>
-            <Button Text="Send" Command="{Binding SendCommand}"/>
+               Placeholder="Give feedback"
+               ReturnType="Send"
+               Completed="OnSendClicked"/>
+            <Button Text="Send" 
+                x:Name="SendButton"
+                Clicked="OnSendClicked"
+                HeightRequest="40"
+                WidthRequest="120"
+                HorizontalOptions="Start"/>
             <Label Text="{Binding Status}" FontSize="12" TextColor="Gray"/>
         </VerticalStackLayout>
     </Grid>

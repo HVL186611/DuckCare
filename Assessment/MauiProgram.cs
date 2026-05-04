@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using DuckLib;
+using Microsoft.Extensions.Logging;
 
 namespace Assessment
 {
@@ -6,6 +7,9 @@ namespace Assessment
     {
         public static MauiApp CreateMauiApp()
         {
+            SQLitePCL.Batteries_V2.Init();
+            DuckAPI.dx = new MauiDuckContext();
+
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()

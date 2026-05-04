@@ -8,7 +8,7 @@ namespace DuckLib
 {
     public class DuckAPI
     {
-        public static readonly DuckContext dx = new();  // todo: make private when testing is done
+        public static DuckContext dx = new();  // todo: make private when testing is done
 
         public static void Add(SimulationCase sim) { 
             dx.Add(sim);

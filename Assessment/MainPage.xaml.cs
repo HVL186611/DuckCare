@@ -1,71 +1,71 @@
 ﻿using System.Collections.ObjectModel;
-using System.Net.Http.Json;
-using System.Windows.Input;
+using DuckLib;
 
 namespace Assessment
 {
     public partial class MainPage : ContentPage
     {
         public ObservableCollection<string> RealTimeLog { get; set; } = new();
-
-        private readonly HttpClient _http = new();
-
-        private string _status = string.Empty;
         private Timer _timer;
+        private string _status = string.Empty;
+
         public string Status
         {
             get => _status;
             set { _status = value; OnPropertyChanged(); }
         }
-        public ICommand SendCommand { get; }
+
+        private int _activeCaseId = -1;
 
         public MainPage()
         {
             InitializeComponent();
             BindingContext = this;
 
-            _timer = new System.Threading.Timer(async _ => await PollLogAsync(),
-                null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+            var activeCase = DuckAPI.GetSimulationCases().FirstOrDefault(c => c.IsActive == 1);
+            if (activeCase != null) _activeCaseId = activeCase.Id;
 
-            SendCommand = new Command(async () => await SendFeedbackAsync());
+            _timer = new System.Threading.Timer(_ => PollLog(),
+                null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
         }
 
-        private async Task PollLogAsync()
+        private void PollLog()
         {
+            if (_activeCaseId == -1) return;
             try
             {
-                var Response = await _http.GetStringAsync("TODO");
-                MainThread.BeginInvokeOnMainThread(() => RealTimeLog.Add(Response));
+                var logs = DuckAPI.GetCaseLogs(_activeCaseId);
+                var lines = logs.Select(l => l.Text ?? "").ToList();
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    RealTimeLog.Clear();
+                    foreach (var line in lines)
+                        RealTimeLog.Add(line);
+                });
             }
             catch (Exception e)
             {
-                MainThread.BeginInvokeOnMainThread(() => RealTimeLog.Add($"ERR: {e.Message}"));
+                MainThread.BeginInvokeOnMainThread(() => Status = $"Poll ERR: {e.Message}");
             }
         }
 
-        private async Task SendFeedbackAsync()
+        private void OnSendClicked(object sender, EventArgs e)
         {
             var text = FeedbackEntry.Text?.Trim();
-            if (string.IsNullOrEmpty(text)) return;
+            if (string.IsNullOrEmpty(text)) { Status = "No text entered"; return; }
+            if (_activeCaseId == -1) { Status = "No active case found"; return; }
 
-            var payload = new
-            {
-                message = text,
-                timestamp = DateTime.UtcNow
-            };
-
+            Status = "Sending...";
             try
             {
-                var response = await _http.PostAsJsonAsync("TODO", payload);
-                Status = response.IsSuccessStatusCode ? "sent" : $"ERR: {response.StatusCode}";
-                if (response.IsSuccessStatusCode) FeedbackEntry.Text = string.Empty;
+                DuckAPI.AddFeedback(_activeCaseId, text);
+                Status = "Sent";
+                FeedbackEntry.Text = string.Empty;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Status = $"Failed: {e.Message}";
+                Status = $"Failed: {ex.Message}";
             }
-
-            OnPropertyChanged(nameof(Status));
         }
     }
 }
