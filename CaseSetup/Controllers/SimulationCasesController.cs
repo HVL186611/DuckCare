@@ -7,7 +7,7 @@ namespace CaseSetup.Controllers
     public class SimulationCasesController : Controller
     {
         private readonly SimulationCaseService _caseService;
-        private bool requireLogin = false; // todo: change to true when testing is done
+        private bool requireLogin = true; // todo: change to true when testing is done
 
         public SimulationCasesController(SimulationCaseService caseService)
         {
@@ -77,6 +77,7 @@ namespace CaseSetup.Controllers
             simulationCase.CreatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             simulationCase.UpdatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
+            PrepareNestedCaseData(simulationCase);
             _caseService.Add(simulationCase);
             /*
             // add/update case database
@@ -134,6 +135,28 @@ namespace CaseSetup.Controllers
 
             // reusing create view for updates
             return View("Create", simulationCase);
+        }
+
+        // helper because db broke nested objects
+        private void PrepareNestedCaseData(SimulationCase simulationCase)
+        {
+            simulationCase.Allergies ??= new List<Allergy>();
+
+            simulationCase.Patient.Medications ??= new List<Order>();
+
+            foreach (Order medicationOrder in simulationCase.Patient.Medications)
+            {
+                medicationOrder.Patient = simulationCase.Patient;
+                medicationOrder.SimulationCase = null;
+            }
+
+            simulationCase.Orders ??= new List<Order>();
+
+            foreach (Order solutionOrder in simulationCase.Orders)
+            {
+                solutionOrder.SimulationCase = simulationCase;
+                solutionOrder.Patient = null;
+            }
         }
     }
 }

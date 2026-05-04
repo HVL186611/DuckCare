@@ -71,6 +71,10 @@
                     <th style="width: 160px; white-space: nowrap;">Medical history</th>
                     <td style="overflow-wrap: anywhere;">@Model.Patient.MedicalHistory</td>
                 </tr>
+                <tr>
+                    <th style="width: 160px; white-space: nowrap;">Admitting diagnosis</th>
+                    <td style="overflow-wrap: anywhere;">@Model.Patient.AdmittingDiagnosis</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -106,6 +110,94 @@
     </div>
 </div>
 
+<h2>Allergies</h2>
+
+@if (Model.Allergies == null || !Model.Allergies.Any())
+{
+    <p class="text-muted">No allergies registered.</p>
+}
+else
+{
+    <table class="table table-sm table-striped" style="max-width: 800px;">
+        <thead>
+            <tr>
+                <th>Allergen</th>
+                <th>Reaction</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var allergy in Model.Allergies)
+            {
+                <tr>
+                    <td>@allergy.Allergen</td>
+                    <td>@allergy.Reaction</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<h2>Current Medications</h2>
+
+@if (Model.Patient.Medications == null || !Model.Patient.Medications.Any())
+{
+    <p class="text-muted">No current medications registered.</p>
+}
+else
+{
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th>Medication</th>
+                <th>Dose</th>
+                <th>Unit</th>
+                <th>Route</th>
+                <th>Timing</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var medicationOrder in Model.Patient.Medications)
+            {
+                <tr>
+                    <td>@medicationOrder.Medication.Name</td>
+                    <td>@medicationOrder.Dose</td>
+                    <td>@medicationOrder.DoseUnit</td>
+                    <td>@medicationOrder.Route</td>
+                    <td>@medicationOrder.Timing</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<h2>Lab Values</h2>
+
+@if (Model.LabValues == null || !Model.LabValues.Any())
+{
+    <p class="text-muted">No lab values registered.</p>
+}
+else
+{
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Reference</th>
+                <th>Interpretation</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var labValue in Model.LabValues)
+            {
+                <tr>
+                    <td>@labValue.Name</td>
+                    <td>@labValue.Value</td>
+                    <td>@labValue.Reference</td>
+                    <td>@labValue.Interpretation</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 <h2>Goals</h2>
 <div>@Model.Goals.Description</div>

@@ -42,6 +42,8 @@ namespace DuckLib
         {
             return dx.SimulationCases
                 .Include(s => s.Patient)
+                    .ThenInclude(p => p.Medications)
+                        .ThenInclude(o => o.Medication)
                 .Include(s => s.StartVitals)
                 .Include(s => s.StartDeltas)
                 .Include(s => s.Orders)
@@ -50,6 +52,7 @@ namespace DuckLib
                     .ThenInclude(o => o.DeltaChange)
                 .Include(s => s.Allergies)
                     .ThenInclude(a => a.Medications)
+                .Include(s => s.LabValues)
                 .Include(s => s.Goals)
                 .Where(s => s.Id == Id)
                 .FirstOrDefault();

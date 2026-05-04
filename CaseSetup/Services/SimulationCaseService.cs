@@ -32,7 +32,10 @@ namespace CaseSetup.Services
             return DuckAPI.GetSimulationCases();
         }
 
-        public SimulationCase? GetById(int Id) { return GetAllCases().FirstOrDefault(c => c.Id == Id); }
+        public SimulationCase? GetById(int Id) { 
+            //return GetAllCases().FirstOrDefault(c => c.Id == Id); 
+            return DuckAPI.GetSimulationCase(Id);
+        }
 
         public void Add(SimulationCase simulationCase) { DuckAPI.Add(simulationCase);  }
 

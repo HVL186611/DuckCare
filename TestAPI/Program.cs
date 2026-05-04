@@ -2,8 +2,8 @@
 using DuckLib;
 
 
-DuckAPI.AddFeedback(1, "yo");
-Console.WriteLine(DuckAPI.GetCaseLogs(1)[0].Text);
+SimulationCase sim = DuckAPI.GetSimulationCase(5);
+Console.WriteLine(sim.Patient.Medications.ToList()[0]);
 
 /*
  * 
